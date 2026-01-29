@@ -47,7 +47,7 @@ class HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 30),
               const Text(
-                "StudyPal",
+                "PrawnWare",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Your interest guide\nfor school",
+                "Manage your farm\nMake works smart",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -83,7 +83,7 @@ class HomePageState extends State<HomePage> {
                     ),
                   ),
                   child: const Text(
-                    "Begin",
+                    "START",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
