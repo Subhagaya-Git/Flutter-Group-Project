@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/main_home_page.dart';
 import 'package:flutter_project/registration_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -101,9 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     height: 55.0,
                     child: ElevatedButton(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Login Successful')),
-                        );
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>MainHomePage()));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF8B9DC3),
