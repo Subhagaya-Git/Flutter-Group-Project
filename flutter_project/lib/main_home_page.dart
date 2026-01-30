@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'favourite_page.dart'; // Import your favorites page
+import 'favourite_page.dart'; // Your enhanced favorites page
+import 'user_profile_page.dart'; // User profile page
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
@@ -11,7 +12,7 @@ class MainHomePage extends StatefulWidget {
 class _MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
 
-  // List of pages for BottomNavigationBar
+  // Pages for BottomNavigationBar
   late final List<Widget> _pages;
 
   @override
@@ -21,7 +22,7 @@ class _MainHomePageState extends State<MainHomePage> {
       _buildHomeContent(), // Home Page
       _buildShopPage(), // Shop Page Placeholder
       const FavouritePage(), // Favorites Page
-      _buildProfilePage(), // Profile Page Placeholder
+      const UserProfilePage(), // Profile Page
     ];
   }
 
@@ -31,31 +32,18 @@ class _MainHomePageState extends State<MainHomePage> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+        onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
+              icon: Icon(Icons.shopping_bag_outlined), label: 'Shop'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Shop',
-          ),
+              icon: Icon(Icons.favorite_border), label: 'Favorites'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
+              icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
     );
@@ -71,9 +59,8 @@ class _MainHomePageState extends State<MainHomePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
-        ),
+            icon: const Icon(Icons.menu, color: Colors.black),
+            onPressed: () {}),
         title: const Text(
           'AppleMart',
           style: TextStyle(
@@ -85,13 +72,12 @@ class _MainHomePageState extends State<MainHomePage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
+              icon:
+                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+              onPressed: () {}),
           IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
+              icon: const Icon(Icons.settings_outlined, color: Colors.black),
+              onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -103,22 +89,18 @@ class _MainHomePageState extends State<MainHomePage> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
+                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
               child: Row(
                 children: [
                   const Text('Search here',
                       style: TextStyle(color: Colors.grey)),
                   const Spacer(),
                   IconButton(
-                    icon: const Icon(Icons.search, color: Colors.grey),
-                    onPressed: () {},
-                  ),
+                      icon: const Icon(Icons.search, color: Colors.grey),
+                      onPressed: () {}),
                   IconButton(
-                    icon: const Icon(Icons.mic_none, color: Colors.grey),
-                    onPressed: () {},
-                  ),
+                      icon: const Icon(Icons.mic_none, color: Colors.grey),
+                      onPressed: () {}),
                 ],
               ),
             ),
@@ -132,10 +114,7 @@ class _MainHomePageState extends State<MainHomePage> {
                   'Choose brand',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('See All'),
-                ),
+                TextButton(onPressed: () {}, child: const Text('See All')),
               ],
             ),
             const SizedBox(height: 12),
@@ -168,21 +147,13 @@ class _MainHomePageState extends State<MainHomePage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildProductCard(
-                    'Noise Cancelling Headphones',
-                    '\$249.95',
-                    Colors.grey[300]!,
-                    true,
-                  ),
+                  child: _buildProductCard('Noise Cancelling Headphones',
+                      '\$249.95', Colors.grey[300]!, true),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildProductCard(
-                    'Classic All-Day Headphones',
-                    '\$289.95',
-                    Colors.pink[50]!,
-                    false,
-                  ),
+                  child: _buildProductCard('Classic All-Day Headphones',
+                      '\$289.95', Colors.pink[50]!, false),
                 ),
               ],
             ),
@@ -192,21 +163,13 @@ class _MainHomePageState extends State<MainHomePage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildProductCard(
-                    'Premium Headphones',
-                    '\$199.95',
-                    Colors.pink[50]!,
-                    false,
-                  ),
+                  child: _buildProductCard('Premium Headphones', '\$199.95',
+                      Colors.pink[50]!, false),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildProductCard(
-                    'Wireless Speakers',
-                    '\$159.95',
-                    Colors.grey[300]!,
-                    true,
-                  ),
+                      'Wireless Speakers', '\$159.95', Colors.grey[300]!, true),
                 ),
               ],
             ),
@@ -220,18 +183,7 @@ class _MainHomePageState extends State<MainHomePage> {
   // Shop Page Placeholder
   // ============================
   Widget _buildShopPage() {
-    return const Center(
-      child: Text('Shop Page Coming Soon'),
-    );
-  }
-
-  // ============================
-  // Profile Page Placeholder
-  // ============================
-  Widget _buildProfilePage() {
-    return const Center(
-      child: Text('Profile Page Coming Soon'),
-    );
+    return const Center(child: Text('Shop Page Coming Soon'));
   }
 
   // ============================
@@ -244,9 +196,7 @@ class _MainHomePageState extends State<MainHomePage> {
           width: 60,
           height: 60,
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
+              color: Colors.white, borderRadius: BorderRadius.circular(12)),
           child: Icon(icon, size: 30),
         ),
         const SizedBox(height: 8),
@@ -265,9 +215,8 @@ class _MainHomePageState extends State<MainHomePage> {
       child: Text(
         title,
         style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black,
-          fontWeight: FontWeight.w500,
-        ),
+            color: isSelected ? Colors.white : Colors.black,
+            fontWeight: FontWeight.w500),
       ),
     );
   }
@@ -276,9 +225,7 @@ class _MainHomePageState extends State<MainHomePage> {
       String title, String price, Color bgColor, bool showBadge) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         height: 240,
         child: Column(
@@ -290,9 +237,8 @@ class _MainHomePageState extends State<MainHomePage> {
                   Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(12)),
                     child: Center(
                       child: Icon(Icons.headphones,
                           size: 80, color: Colors.grey[600]),
@@ -306,17 +252,13 @@ class _MainHomePageState extends State<MainHomePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'HOT',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                            color: Colors.orange,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: const Text('HOT',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold)),
                       ),
                     ),
                 ],
