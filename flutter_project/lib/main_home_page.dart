@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/app_settings_page.dart';
 import 'favourite_page.dart'; // Your enhanced favorites page
 import 'user_profile_page.dart'; // User profile page
 
@@ -60,7 +61,12 @@ class _MainHomePageState extends State<MainHomePage> {
         elevation: 0,
         leading: IconButton(
             icon: const Icon(Icons.menu, color: Colors.black),
-            onPressed: () {}),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AppSettingsPage()),
+              );
+            }),
         title: const Text(
           'AppleMart',
           style: TextStyle(
