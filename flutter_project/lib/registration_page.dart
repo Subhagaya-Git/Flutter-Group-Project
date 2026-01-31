@@ -58,7 +58,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 alignment: Alignment.topLeft,
                 child: Material(
                   color: Colors.transparent,
-<<<<<<< HEAD
                   child: InkWell(
                     onTap: () => Navigator.pop(context),
                     borderRadius: BorderRadius.circular(30),
@@ -79,32 +78,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         Icons.arrow_back,
                         color: Colors.black,
                         size: 24,
-=======
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: InkWell(
-                      onTap: () => Navigator.pop(context),
-                      customBorder: const CircleBorder(),
-                      splashColor: Colors.black.withOpacity(0.1),
-                      highlightColor: Colors.black.withOpacity(0.05),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: 24,
-                        ),
->>>>>>> 04a67825202c0b0eff65e8bb009f868061121ee3
                       ),
                     ),
                   ),
@@ -194,13 +167,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 32),
 
-              // Register Button with Elevation
+              // Register Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: Material(
                   elevation: 8,
-<<<<<<< HEAD
                   borderRadius: BorderRadius.circular(30),
                   shadowColor: Colors.black26,
                   child: InkWell(
@@ -229,38 +201,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             color: Colors.white,
                           ),
                         ),
-=======
-                  shadowColor: Colors.black.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(30),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Colors.black,
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Registration Successful'),
-                            backgroundColor: Colors.black,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(30),
-                      splashColor: Colors.white.withOpacity(0.2),
-                      highlightColor: Colors.white.withOpacity(0.1),
-                      child: const Center(
-                        child: Text(
-                          'CREATE ACCOUNT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                            color: Colors.white,
-                          ),
-                        ),
->>>>>>> 04a67825202c0b0eff65e8bb009f868061121ee3
                       ),
                     ),
                   ),
@@ -271,23 +211,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Login Link
               Material(
                 color: Colors.transparent,
-<<<<<<< HEAD
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const LoginPage(),
-=======
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Already have an account? ',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.black54,
->>>>>>> 04a67825202c0b0eff65e8bb009f868061121ee3
                       ),
                     );
                   },
@@ -319,32 +248,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ],
                     ),
-<<<<<<< HEAD
                   ),
-=======
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginPage(),
-                          ),
-                        );
-                      },
-                      splashColor: Colors.black.withOpacity(0.1),
-                      highlightColor: Colors.black.withOpacity(0.05),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
->>>>>>> 04a67825202c0b0eff65e8bb009f868061121ee3
                 ),
               ),
             ],
