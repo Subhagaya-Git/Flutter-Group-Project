@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main_home_page.dart';
 
 class FavouritePage extends StatefulWidget {
   const FavouritePage({super.key});
@@ -49,6 +50,17 @@ class _FavouritePageState extends State<FavouritePage> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const MainHomePage()), // Assuming MainHomePage is the class name
+            );
+          },
+        ),
         title: const Text(
           'My Favorites',
           style: TextStyle(
@@ -148,7 +160,8 @@ class _FavouritePageState extends State<FavouritePage> {
                     top: -4,
                     right: -4,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: Colors.orange,
                         borderRadius: BorderRadius.circular(10),
@@ -197,7 +210,8 @@ class _FavouritePageState extends State<FavouritePage> {
                       const SizedBox(width: 4),
                       Text(
                         "$rating ($reviews reviews)",
-                        style: const TextStyle(fontSize: 13, color: Colors.black54),
+                        style: const TextStyle(
+                            fontSize: 13, color: Colors.black54),
                       ),
                     ],
                   ),
