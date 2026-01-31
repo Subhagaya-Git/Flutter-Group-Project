@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/app_settings_page.dart';
+import 'package:flutter_project/login_page.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key});
@@ -17,7 +19,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>AppSettingsPage()));
+          },
         ),
         title: const Text(
           'AppleMart',
@@ -107,7 +111,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginPage()));
+                  },
                   icon: const Icon(Icons.logout, color: Colors.white),
                   label: const Text(
                     'Sign Out',
