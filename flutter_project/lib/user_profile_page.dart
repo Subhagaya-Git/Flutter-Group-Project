@@ -28,16 +28,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
