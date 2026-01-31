@@ -154,10 +154,10 @@ Widget _buildMenuItem({
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.teal.withOpacity(0.1),
+          color: Colors.black26.withOpacity(0.1),
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: Colors.teal),
+        child: Icon(icon, color: Colors.black45),
       ),
       title: Text(
         title,
