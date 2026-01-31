@@ -43,38 +43,6 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 60.0),
           child: Column(
             children: [
-              // Back Button
-              Align(
-                alignment: Alignment.topLeft,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => Navigator.pop(context),
-                    borderRadius: BorderRadius.circular(30),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.black,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 48),
-
               // Title
               const Text(
                 "Welcome Back",
