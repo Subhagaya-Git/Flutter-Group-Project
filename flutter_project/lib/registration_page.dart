@@ -53,10 +53,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Back Button
               Align(
                 alignment: Alignment.topLeft,
-                child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Ink(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white.withOpacity(0.8),
@@ -68,10 +67,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.black,
-                      size: 24,
+                    child: InkWell(
+                      onTap: () => Navigator.pop(context),
+                      customBorder: const CircleBorder(),
+                      splashColor: Colors.black.withOpacity(0.1),
+                      highlightColor: Colors.black.withOpacity(0.05),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -150,46 +158,42 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 32),
 
-              // Register Button
+              // Register Button with Elevation
               SizedBox(
                 width: double.infinity,
                 height: 56,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.black,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 12,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                child: Material(
+                  elevation: 8,
+                  shadowColor: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.black,
                     ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Registration Successful'),
-                          backgroundColor: Colors.black,
-                          duration: Duration(seconds: 2),
+                    child: InkWell(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Registration Successful'),
+                            backgroundColor: Colors.black,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(30),
+                      splashColor: Colors.white.withOpacity(0.2),
+                      highlightColor: Colors.white.withOpacity(0.1),
+                      child: const Center(
+                        child: Text(
+                          'CREATE ACCOUNT',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                            color: Colors.white,
+                          ),
                         ),
-                      );
-                    },
-                    child: const Text(
-                      'CREATE ACCOUNT',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -198,36 +202,41 @@ class _RegistrationPageState extends State<RegistrationPage> {
               const SizedBox(height: 20),
 
               // Login Link
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Already have an account? ',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Login',
+              Material(
+                color: Colors.transparent,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Already have an account? ',
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                        decoration: TextDecoration.underline,
+                        color: Colors.black54,
                       ),
                     ),
-                  ),
-                ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      splashColor: Colors.black.withOpacity(0.1),
+                      highlightColor: Colors.black.withOpacity(0.05),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
