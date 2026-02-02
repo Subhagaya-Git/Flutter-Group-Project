@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/app_settings_page.dart';
-import 'favourite_page.dart'; // Your enhanced favorites page
-import 'user_profile_page.dart'; // User profile page
+import 'package:flutter_project/product_detail_page.dart';
+import 'package:flutter_project/models/product.dart';
+import 'package:flutter_project/services/product_service.dart';
+import 'favourite_page.dart';
+import 'user_profile_page.dart';
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({super.key});
@@ -12,18 +15,18 @@ class MainHomePage extends StatefulWidget {
 
 class _MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
+  final ProductService _productService = ProductService();
 
-  // Pages for BottomNavigationBar
   late final List<Widget> _pages;
 
   @override
   void initState() {
     super.initState();
     _pages = [
-      _buildHomeContent(), // Home Page
-      _buildShopPage(), // Shop Page Placeholder
-      const FavouritePage(), // Favorites Page
-      const UserProfilePage(), // Profile Page
+      _buildHomeContent(),
+      _buildShopPage(),
+      const FavouritePage(),
+      const UserProfilePage(),
     ];
   }
 
@@ -39,20 +42,14 @@ class _MainHomePageState extends State<MainHomePage> {
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shop), label: 'Category'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border), label: 'Favorites'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline), label: 'Profile'),
+          BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Category'),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Favorites'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
     );
   }
 
-  // ============================
-  // Home Page Content
-  // ============================
   Widget _buildHomeContent() {
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -78,8 +75,7 @@ class _MainHomePageState extends State<MainHomePage> {
         centerTitle: true,
         actions: [
           IconButton(
-              icon:
-                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+              icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
               onPressed: () {}),
           IconButton(
               icon: const Icon(Icons.settings_outlined, color: Colors.black),
@@ -98,8 +94,7 @@ class _MainHomePageState extends State<MainHomePage> {
                   color: Colors.white, borderRadius: BorderRadius.circular(12)),
               child: Row(
                 children: [
-                  const Text('Search here',
-                      style: TextStyle(color: Colors.grey)),
+                  const Text('Search here', style: TextStyle(color: Colors.grey)),
                   const Spacer(),
                   IconButton(
                       icon: const Icon(Icons.search, color: Colors.grey),
@@ -116,10 +111,7 @@ class _MainHomePageState extends State<MainHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Choose brand',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                const Text('Choose brand', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(onPressed: () {}, child: const Text('See All')),
               ],
             ),
@@ -149,35 +141,62 @@ class _MainHomePageState extends State<MainHomePage> {
             ),
             const SizedBox(height: 20),
 
-            // Product Cards - Row 1
-            Row(
-              children: [
-                Expanded(
-                  child: _buildProductCard('Noise Cancelling Headphones',
-                      '\$249.95', Colors.grey[300]!, true),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildProductCard('Classic All-Day Headphones',
-                      '\$289.95', Colors.pink[50]!, false),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+            // Products from Supabase Database
+            FutureBuilder<List<Product>>(
+              future: _productService.getAllProducts(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
 
-            // Product Cards - Row 2
-            Row(
-              children: [
-                Expanded(
-                  child: _buildProductCard('Premium Headphones', '\$199.95',
-                      Colors.pink[50]!, false),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildProductCard(
-                      'Wireless Speakers', '\$159.95', Colors.grey[300]!, true),
-                ),
-              ],
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                        const SizedBox(height: 16),
+                        Text('Error: ${snapshot.error}'),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: () => setState(() {}),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text('No products available'),
+                    ),
+                  );
+                }
+
+                final products = snapshot.data!;
+                
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return _buildProductCardFromDB(products[index]);
+                  },
+                );
+              },
             ),
           ],
         ),
@@ -185,16 +204,10 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  // ============================
-  // Shop Page Placeholder
-  // ============================
   Widget _buildShopPage() {
     return const Center(child: Text('Shop Page Coming Soon'));
   }
 
-  // ============================
-  // Reusable Widgets
-  // ============================
   Widget _buildBrandIcon(String name, IconData icon) {
     return Column(
       children: [
@@ -227,13 +240,21 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  Widget _buildProductCard(
-      String title, String price, Color bgColor, bool showBadge) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        height: 240,
+  // Build product card from database
+  Widget _buildProductCardFromDB(Product product) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to product detail page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailPage(product: product),
+          ),
+        );
+      },
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -243,20 +264,19 @@ class _MainHomePageState extends State<MainHomePage> {
                   Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                        color: bgColor,
-                        borderRadius: BorderRadius.circular(12)),
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: Center(
-                      child: Icon(Icons.headphones,
-                          size: 80, color: Colors.grey[600]),
+                      child: Icon(Icons.headphones, size: 80, color: Colors.grey[600]),
                     ),
                   ),
-                  if (showBadge)
+                  if (product.rating >= 4.5)
                     Positioned(
                       top: 16,
                       right: 16,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(8)),
@@ -275,15 +295,17 @@ class _MainHomePageState extends State<MainHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w500),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    product.name,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 4),
-                  Text(price,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
             ),
