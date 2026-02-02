@@ -7,7 +7,8 @@ import 'favourite_page.dart';
 import 'user_profile_page.dart';
 
 class MainHomePage extends StatefulWidget {
-  const MainHomePage({super.key});
+  final String userEmail;
+  const MainHomePage({super.key, required this.userEmail});
 
   @override
   State<MainHomePage> createState() => _MainHomePageState();
@@ -25,8 +26,8 @@ class _MainHomePageState extends State<MainHomePage> {
     _pages = [
       _buildHomeContent(),
       _buildShopPage(),
-      const FavouritePage(),
-      const UserProfilePage(),
+      FavouritePage(userEmail: widget.userEmail),
+      UserProfilePage(userEmail: widget.userEmail),
     ];
   }
 
@@ -43,8 +44,10 @@ class _MainHomePageState extends State<MainHomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Category'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: 'Favorites'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.favorite_border), label: 'Favorites'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline), label: 'Profile'),
         ],
       ),
     );
@@ -61,7 +64,8 @@ class _MainHomePageState extends State<MainHomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AppSettingsPage()),
+                MaterialPageRoute(
+                    builder: (context) => const AppSettingsPage()),
               );
             }),
         title: const Text(
@@ -75,7 +79,8 @@ class _MainHomePageState extends State<MainHomePage> {
         centerTitle: true,
         actions: [
           IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+              icon:
+                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
               onPressed: () {}),
           IconButton(
               icon: const Icon(Icons.settings_outlined, color: Colors.black),
@@ -94,7 +99,8 @@ class _MainHomePageState extends State<MainHomePage> {
                   color: Colors.white, borderRadius: BorderRadius.circular(12)),
               child: Row(
                 children: [
-                  const Text('Search here', style: TextStyle(color: Colors.grey)),
+                  const Text('Search here',
+                      style: TextStyle(color: Colors.grey)),
                   const Spacer(),
                   IconButton(
                       icon: const Icon(Icons.search, color: Colors.grey),
@@ -111,7 +117,9 @@ class _MainHomePageState extends State<MainHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Choose brand', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text('Choose brand',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(onPressed: () {}, child: const Text('See All')),
               ],
             ),
@@ -158,7 +166,8 @@ class _MainHomePageState extends State<MainHomePage> {
                   return Center(
                     child: Column(
                       children: [
-                        const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                        const Icon(Icons.error_outline,
+                            size: 48, color: Colors.red),
                         const SizedBox(height: 16),
                         Text('Error: ${snapshot.error}'),
                         const SizedBox(height: 8),
@@ -181,7 +190,7 @@ class _MainHomePageState extends State<MainHomePage> {
                 }
 
                 final products = snapshot.data!;
-                
+
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -268,7 +277,8 @@ class _MainHomePageState extends State<MainHomePage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
-                      child: Icon(Icons.headphones, size: 80, color: Colors.grey[600]),
+                      child: Icon(Icons.headphones,
+                          size: 80, color: Colors.grey[600]),
                     ),
                   ),
                   if (product.rating >= 4.5)
@@ -276,7 +286,8 @@ class _MainHomePageState extends State<MainHomePage> {
                       top: 16,
                       right: 16,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                             color: Colors.orange,
                             borderRadius: BorderRadius.circular(8)),
@@ -297,14 +308,16 @@ class _MainHomePageState extends State<MainHomePage> {
                 children: [
                   Text(
                     product.name,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w500),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

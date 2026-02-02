@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'main_home_page.dart';
 
 class FavouritePage extends StatefulWidget {
-  const FavouritePage({super.key});
+  final String userEmail;
+
+  const FavouritePage({super.key, required this.userEmail});
 
   @override
   State<FavouritePage> createState() => _FavouritePageState();
@@ -56,8 +58,10 @@ class _FavouritePageState extends State<FavouritePage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      const MainHomePage()), // Assuming MainHomePage is the class name
+                builder: (context) => MainHomePage(
+                  userEmail: widget.userEmail,
+                ),
+              ),
             );
           },
         ),
