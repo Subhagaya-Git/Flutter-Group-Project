@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'registration_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/supabase_config.dart';
-import 'main_home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
