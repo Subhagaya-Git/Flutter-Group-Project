@@ -5,7 +5,7 @@ import 'package:flutter_project/models/user_model.dart';
 import 'package:flutter_project/services/user_service.dart';
 
 class UserProfilePage extends StatefulWidget {
-  final String userEmail;
+  final String userEmail; 
 
   const UserProfilePage({super.key, required this.userEmail});
 
@@ -272,8 +272,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        trailing:
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         onTap: onTap,
       ),
     );
@@ -282,8 +281,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   // Edit Profile Dialog
   void _showEditProfileDialog() {
     final nameController = TextEditingController(text: _currentUser!.fullName);
-    final phoneController =
-        TextEditingController(text: _currentUser!.phoneNumber);
+    final phoneController = TextEditingController(text: _currentUser!.phoneNumber);
 
     showDialog(
       context: context,
@@ -330,15 +328,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Profile updated successfully')),
+                    const SnackBar(content: Text('Profile updated successfully')),
                   );
                 }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-            child: const Text('Save Changes',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -347,8 +343,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   // Edit Address Dialog
   void _showEditAddressDialog() {
-    final addressController =
-        TextEditingController(text: _currentUser!.shippingAddress);
+    final addressController = TextEditingController(text: _currentUser!.shippingAddress);
 
     showDialog(
       context: context,
@@ -379,15 +374,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Address updated successfully')),
+                    const SnackBar(content: Text('Address updated successfully')),
                   );
                 }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-            child: const Text('Save Changes',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -442,28 +435,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (newPasswordController.text !=
-                  confirmPasswordController.text) {
+              if (newPasswordController.text != confirmPasswordController.text) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Passwords do not match')),
                 );
                 return;
               }
 
-              final success =
-                  await _userService.updatePassword(newPasswordController.text);
+              final success = await _userService.updatePassword(newPasswordController.text);
 
               if (success && mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Password changed successfully')),
+                  const SnackBar(content: Text('Password changed successfully')),
                 );
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-            child: const Text('Save Changes',
-                style: TextStyle(color: Colors.white)),
+            child: const Text('Save Changes', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -59,7 +59,7 @@ class _FavouritePageState extends State<FavouritePage> {
               context,
               MaterialPageRoute(
                 builder: (context) => MainHomePage(
-                  userEmail: widget.userEmail,
+                  userEmail: widget.userEmail, 
                 ),
               ),
             );

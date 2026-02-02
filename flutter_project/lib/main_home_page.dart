@@ -27,7 +27,7 @@ class _MainHomePageState extends State<MainHomePage> {
       _buildHomeContent(),
       _buildShopPage(),
       FavouritePage(userEmail: widget.userEmail),
-      UserProfilePage(userEmail: widget.userEmail),
+      UserProfilePage(userEmail: widget.userEmail), 
     ];
   }
 
