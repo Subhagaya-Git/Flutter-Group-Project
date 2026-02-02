@@ -7,7 +7,8 @@ import 'favourite_page.dart';
 import 'user_profile_page.dart';
 
 class MainHomePage extends StatefulWidget {
-  const MainHomePage({super.key});
+  final String userEmail;
+  const MainHomePage({super.key, required this.userEmail});
 
   @override
   State<MainHomePage> createState() => _MainHomePageState();
@@ -25,8 +26,8 @@ class _MainHomePageState extends State<MainHomePage> {
     _pages = [
       _buildHomeContent(),
       _buildShopPage(),
-      const FavouritePage(),
-      const UserProfilePage(),
+      FavouritePage(userEmail: widget.userEmail),
+      UserProfilePage(userEmail: widget.userEmail), 
     ];
   }
 
