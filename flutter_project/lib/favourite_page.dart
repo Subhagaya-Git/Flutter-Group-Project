@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'main_home_page.dart';
 
 class FavouritePage extends StatefulWidget {
-  final String userEmail; 
+  final String userEmail;
 
   const FavouritePage({super.key, required this.userEmail});
 
