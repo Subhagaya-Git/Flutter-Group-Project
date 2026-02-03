@@ -1,8 +1,8 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/user_model.dart';
+import 'package:flutter_project/models/user_model.dart';
 
 class UserService {
-  final SupabaseClient _supabase = Supabase.instance.client;
+  final _supabase = Supabase.instance.client;
 
   // Get user by email
   Future<UserModel?> getUserByEmail(String email) async {
@@ -15,23 +15,7 @@ class UserService {
 
       return UserModel.fromJson(response);
     } catch (e) {
-      print('Error fetching user: $e');
-      return null;
-    }
-  }
-
-  // Get user by ID
-  Future<UserModel?> getUserById(String id) async {
-    try {
-      final response = await _supabase
-          .from('users')
-          .select()
-          .eq('id', id)
-          .single();
-
-      return UserModel.fromJson(response);
-    } catch (e) {
-      print('Error fetching user: $e');
+      print('Error getting user: $e');
       return null;
     }
   }
@@ -41,12 +25,8 @@ class UserService {
     try {
       await _supabase
           .from('users')
-          .update({
-            ...updates,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
+          .update(updates)
           .eq('id', userId);
-
       return true;
     } catch (e) {
       print('Error updating user: $e');
@@ -55,11 +35,25 @@ class UserService {
   }
 
   // Update password
-  Future<bool> updatePassword(String newPassword) async {
+  Future<bool> updatePassword(String userId, String currentPassword, String newPassword) async {
     try {
-      await _supabase.auth.updateUser(
-        UserAttributes(password: newPassword),
-      );
+      // First verify current password
+      final user = await _supabase
+          .from('users')
+          .select('password')
+          .eq('id', userId)
+          .single();
+
+      if (user['password'] != currentPassword) {
+        return false; // Current password is incorrect
+      }
+
+      // Update to new password
+      await _supabase
+          .from('users')
+          .update({'password': newPassword})
+          .eq('id', userId);
+      
       return true;
     } catch (e) {
       print('Error updating password: $e');
@@ -67,6 +61,7 @@ class UserService {
     }
   }
 
+  // Sign out
   // Sign out
   Future<void> signOut() async {
     await _supabase.auth.signOut();
