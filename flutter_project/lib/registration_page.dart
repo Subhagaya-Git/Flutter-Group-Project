@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/login_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -19,6 +20,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
+
+  final _supabase = Supabase.instance.client;
 
   @override
   void dispose() {
@@ -29,6 +33,90 @@ class _RegistrationPageState extends State<RegistrationPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+      Future<void> _registerUser() async {
+    // Validation
+    if (_firstNameController.text.trim().isEmpty ||
+        _lastNameController.text.trim().isEmpty ||
+        _emailController.text.trim().isEmpty ||
+        _mobileController.text.trim().isEmpty ||
+        _passwordController.text.isEmpty) {
+      _showSnackBar('Please fill all fields', isError: true);
+      return;
+    }
+
+    if (_passwordController.text != _confirmPasswordController.text) {
+      _showSnackBar('Passwords do not match', isError: true);
+      return;
+    }
+
+    if (_passwordController.text.length < 6) {
+      _showSnackBar('Password must be at least 6 characters', isError: true);
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+      
+      // Check if email already exists
+      final existingUser = await _supabase
+          .from('users')
+          .select()
+          .eq('email', _emailController.text.trim())
+          .maybeSingle();
+
+      if (existingUser != null) {
+        _showSnackBar('Email already registered', isError: true);
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Insert user directly into database
+      await _supabase.from('users').insert({
+        'email': _emailController.text.trim(),
+        'full_name': fullName,
+        'phone_number': _mobileController.text.trim(),
+        'password': _passwordController.text, // Store password (consider hashing in production)
+        'role': 'Buyer',
+      });
+
+      if (mounted) {
+        _showSnackBar('Registration Successful! You can now login.');
+        
+        // Navigate to login page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const LoginPage(),
+          ),
+        );
+      }
+    } catch (error) {
+      _showSnackBar('Registration failed: ${error.toString()}', isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.black,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
@@ -53,7 +141,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
           child: Column(
             children: [
-              // Title
+              // ...existing code...
               const Text(
                 "Create Account",
                 style: TextStyle(
@@ -144,31 +232,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   borderRadius: BorderRadius.circular(30),
                   shadowColor: Colors.black26,
                   child: InkWell(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Registration Successful'),
-                          backgroundColor: Colors.black,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
+                    onTap: _isLoading ? null : _registerUser,
                     borderRadius: BorderRadius.circular(30),
                     child: Ink(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: Colors.black,
+                        color: _isLoading ? Colors.grey : Colors.black,
                       ),
-                      child: const Center(
-                        child: Text(
-                          'CREATE ACCOUNT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.2,
-                            color: Colors.white,
-                          ),
-                        ),
+                      child: Center(
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                'CREATE ACCOUNT',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -197,15 +281,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
+                      children: const [
+                        Text(
                           'Already have an account? ',
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
                           ),
                         ),
-                        const Text(
+                        Text(
                           'Login',
                           style: TextStyle(
                             fontSize: 15,
@@ -226,6 +310,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
+  // ...existing code...
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,

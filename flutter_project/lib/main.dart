@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'registration_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'config/supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize Supabase
   await Supabase.initialize(
-    url: SupabaseConfig.supabaseUrl,
-    anonKey: SupabaseConfig.supabaseAnonKey,
+    url: 'https://mdjckakosceheneezuox.supabase.co',
+    anonKey: 'sb_publishable_eZsgnC2E1LKOXqaqKPal8g_YEhRknho',
   );
 
   runApp(const MyApp());
 }
 
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
