@@ -6,6 +6,7 @@ import 'package:flutter_project/services/product_service.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
+import 'cart_page.dart';
 
 class MainHomePage extends StatefulWidget {
   final String userEmail;
@@ -112,10 +113,13 @@ class _MainHomePageState extends State<MainHomePage> {
           ),
         ),
         centerTitle: true,
-        actions: [
+       actions: [
           IconButton(
               icon:
                   const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.settings_outlined, color: Colors.black),
               onPressed: () {}),
         ],
       ),
