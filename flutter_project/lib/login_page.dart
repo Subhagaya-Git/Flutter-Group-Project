@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _isLoading = false;
 
@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
       if (response != null) {
         if (mounted) {
           _showSnackBar('Login Successful!');
-          
+
           // Navigate to home page
           Navigator.pushReplacement(
             context,
@@ -95,8 +95,8 @@ class _LoginPageState extends State<LoginPage> {
             end: Alignment.bottomCenter,
             colors: [
               Color(0xFFFFFFFF),
-              Color(0xFFF2F2F7),
-              Color(0xFFE5ECF4),
+              Color(0xFFFFFFFF),
+              Color(0xFFFFFFFF),
             ],
           ),
         ),
@@ -195,7 +195,9 @@ class _LoginPageState extends State<LoginPage> {
                       });
                     },
                     child: Icon(
-                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: Colors.black54,
                       size: 22,
                     ),

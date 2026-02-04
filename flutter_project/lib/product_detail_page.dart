@@ -76,7 +76,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       child: Stack(
         children: [
           PageView.builder(
-            itemCount: widget.product.images.length > 0 ? widget.product.images.length : 1,
+            itemCount: widget.product.images.isNotEmpty ? widget.product.images.length : 1,
             onPageChanged: (index) {
               setState(() => _currentImageIndex = index);
             },

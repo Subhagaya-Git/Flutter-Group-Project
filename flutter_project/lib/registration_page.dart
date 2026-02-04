@@ -110,15 +110,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFF2F2F7),
-              Color(0xFFE5ECF4),
-            ],
-          ),
+          color: Colors.white,
         ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
@@ -324,8 +316,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         labelText: label,
         prefixIcon: Icon(icon),
         suffixIcon: IconButton(
-          icon: Icon(
-              obscurePassword ? Icons.visibility_off : Icons.visibility),
+          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
           onPressed: onToggleVisibility,
         ),
         border: OutlineInputBorder(
