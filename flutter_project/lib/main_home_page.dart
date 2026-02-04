@@ -374,7 +374,10 @@ class _MainHomePageState extends State<MainHomePage> {
             ),
             itemCount: products.length,
             itemBuilder: (context, index) {
-              return _buildProductCard(products[index]);
+              return _buildProductCard(
+                products[index],
+                category: _selectedCategory, // Pass the current category
+              );
             },
           ),
         );
@@ -382,7 +385,7 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(Product product, {String category = 'New Arrival'}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -415,7 +418,8 @@ class _MainHomePageState extends State<MainHomePage> {
                           size: 80, color: Colors.grey[600]),
                     ),
                   ),
-                  if (product.rating >= 4.5)
+                  // Show badge based on category
+                  if (category == 'New Arrival' && product.rating >= 4.5)
                     Positioned(
                       top: 16,
                       right: 16,
@@ -430,6 +434,54 @@ class _MainHomePageState extends State<MainHomePage> {
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  // Show star for Popular
+                  if (category == 'Popular')
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star, 
+                                color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${product.rating}',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  // Show discount percentage for Discount
+                  if (category == 'Discount' && product.discountPercentage != null)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          '${product.discountPercentage}% OFF',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                 ],
@@ -448,11 +500,29 @@ class _MainHomePageState extends State<MainHomePage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  // Show original price with strikethrough if discount exists
+                  if (category == 'Discount' && product.discountPercentage != null) ...[
+                    Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    Text(
+                      '\$${(product.price * (1 - product.discountPercentage! / 100)).toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                  ] else
+                    Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                 ],
               ),
             ),
