@@ -94,10 +94,112 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       ),
       body: Column(
         children: [
+<<<<<<< HEAD
+          PageView.builder(
+            itemCount: widget.product.images.isNotEmpty ? widget.product.images.length : 1,
+            onPageChanged: (index) {
+              setState(() => _currentImageIndex = index);
+            },
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.headphones,
+                    size: 150,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              );
+            },
+          ),
+          Positioned(
+            top: 30,
+            right: 30,
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _isFavorite = !_isFavorite);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: _isFavorite ? Colors.red : Colors.black,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+          if (widget.product.images.length > 1)
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  widget.product.images.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: _currentImageIndex == index ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: _currentImageIndex == index
+                          ? Colors.black
+                          : Colors.grey[400],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductInfo() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  widget.product.brand,
+                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                ),
+              ),
+              Row(
+=======
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+>>>>>>> 22909aa21bfb0eb519bb875da10c97096dbd02fa
                 children: [
                   // Product Image
                   Container(

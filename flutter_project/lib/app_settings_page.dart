@@ -75,7 +75,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     _notificationsEnabled = value;
                   });
                 },
-                activeColor: Colors.black,
+                activeThumbColor: Colors.black,
               ),
             ),
             _buildSettingsCard(
@@ -97,7 +97,7 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                     _darkModeEnabled = value;
                   });
                 },
-                activeColor: Colors.black,
+                activeThumbColor: Colors.black,
               ),
             ),
             const SizedBox(height: 16),
