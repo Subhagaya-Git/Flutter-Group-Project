@@ -21,7 +21,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
-  bool _isLoginLoading = false; // ✅ added
+  bool _isLoginLoading = false;
 
   final _supabase = Supabase.instance.client;
 
@@ -107,176 +107,167 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-        ),
-        child: SingleChildScrollView(
+    return Center(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-          child: Column(
-            children: [
-              const Text(
-                "Create Account",
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "Create Account",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-
-              _buildTextField(
-                controller: _firstNameController,
-                label: 'First Name',
-                icon: Icons.person,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _lastNameController,
-                label: 'Last Name',
-                icon: Icons.person_outline,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _emailController,
-                label: 'Email Address',
-                icon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 16),
-
-              _buildTextField(
-                controller: _mobileController,
-                label: 'Mobile Number',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 16),
-
-              _buildPasswordTextField(
-                controller: _passwordController,
-                label: 'Password',
-                icon: Icons.lock_outline,
-                obscurePassword: _obscurePassword,
-                onToggleVisibility: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              _buildPasswordTextField(
-                controller: _confirmPasswordController,
-                label: 'Confirm Password',
-                icon: Icons.lock_outline,
-                obscurePassword: _obscureConfirmPassword,
-                onToggleVisibility: () {
-                  setState(() {
-                    _obscureConfirmPassword = !_obscureConfirmPassword;
-                  });
-                },
-              ),
-              const SizedBox(height: 32),
-
-              // Register Button (UNCHANGED)
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: Material(
-                  elevation: 8,
-                  borderRadius: BorderRadius.circular(30),
-                  shadowColor: Colors.black26,
-                  child: InkWell(
-                    onTap: _isLoading ? null : _registerUser,
+                const SizedBox(height: 32),
+                _buildTextField(
+                  controller: _firstNameController,
+                  label: 'First Name',
+                  icon: Icons.person,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: _lastNameController,
+                  label: 'Last Name',
+                  icon: Icons.person_outline,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: _emailController,
+                  label: 'Email Address',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(
+                  controller: _mobileController,
+                  label: 'Mobile Number',
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 16),
+                _buildPasswordTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  icon: Icons.lock_outline,
+                  obscurePassword: _obscurePassword,
+                  onToggleVisibility: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildPasswordTextField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm Password',
+                  icon: Icons.lock_outline,
+                  obscurePassword: _obscureConfirmPassword,
+                  onToggleVisibility: () {
+                    setState(() {
+                      _obscureConfirmPassword = !_obscureConfirmPassword;
+                    });
+                  },
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: Material(
+                    elevation: 8,
                     borderRadius: BorderRadius.circular(30),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: _isLoading ? Colors.grey : Colors.black,
-                      ),
-                      child: Center(
-                        child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                'CREATE ACCOUNT',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.2,
+                    shadowColor: Colors.black26,
+                    child: InkWell(
+                      onTap: _isLoading ? null : _registerUser,
+                      borderRadius: BorderRadius.circular(30),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: _isLoading ? Colors.grey : Colors.black,
+                        ),
+                        child: Center(
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
                                   color: Colors.white,
+                                )
+                              : const Text(
+                                  'CREATE ACCOUNT',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // ✅ LOGIN WITH SPINNER (ONLY CHANGE HERE)
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _isLoginLoading
-                      ? null
-                      : () async {
-                          setState(() => _isLoginLoading = true);
-                          await Future.delayed(
-                              const Duration(milliseconds: 300));
-                          if (mounted) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginPage(),
+                const SizedBox(height: 20),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _isLoginLoading
+                        ? null
+                        : () async {
+                            setState(() => _isLoginLoading = true);
+                            await Future.delayed(
+                                const Duration(milliseconds: 300));
+                            if (mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
+                              );
+                            }
+                          },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      child: _isLoginLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.black,
                               ),
-                            );
-                          }
-                        },
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    child: _isLoginLoading
-                        ? const SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.5,
-                              color: Colors.black,
+                            )
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Text(
+                                  'Already have an account? ',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        : Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Text(
-                                'Already have an account? ',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              Text(
-                                'Login',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.black,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ],
-                          ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
