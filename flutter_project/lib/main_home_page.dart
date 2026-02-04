@@ -27,7 +27,7 @@ class _MainHomePageState extends State<MainHomePage> {
       _buildHomeContent(),
       _buildShopPage(),
       FavouritePage(userEmail: widget.userEmail),
-      UserProfilePage(userEmail: widget.userEmail), 
+      UserProfilePage(userEmail: widget.userEmail),
     ];
   }
 
@@ -81,9 +81,6 @@ class _MainHomePageState extends State<MainHomePage> {
           IconButton(
               icon:
                   const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-              onPressed: () {}),
-          IconButton(
-              icon: const Icon(Icons.settings_outlined, color: Colors.black),
               onPressed: () {}),
         ],
       ),
