@@ -85,237 +85,223 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFFFFFFF),
-              Color(0xFFFFFFFF),
-            ],
-          ),
-        ),
+      backgroundColor: Colors.white,
+      body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 60),
-                const Text(
-                  "Welcome Back",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                    color: Colors.black,
-                  ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(height: 60),
+              const Text(
+                "Welcome Back",
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                  color: Colors.black,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  "Sign in to continue",
-                  style: TextStyle(
-                    fontSize: 16,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Sign in to continue",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 48),
+
+              // Email
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email Address',
+                  labelStyle: const TextStyle(
                     color: Colors.black54,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                ),
-                const SizedBox(height: 48),
-
-                // Email
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                  prefixIcon: const Icon(
+                    Icons.email_outlined,
+                    color: Colors.black,
+                    size: 22,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(
+                      color: Colors.black.withOpacity(0.1),
+                      width: 1.5,
                     ),
-                    prefixIcon: const Icon(
-                      Icons.email_outlined,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(
+                      color: Colors.black.withOpacity(0.1),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: const BorderSide(
                       color: Colors.black,
-                      size: 22,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.8),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: BorderSide(
-                        color: Colors.black.withOpacity(0.1),
-                        width: 1.5,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: BorderSide(
-                        color: Colors.black.withOpacity(0.1),
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: const BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 16,
+                      width: 2,
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // Password
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    labelStyle: const TextStyle(
-                      color: Colors.black54,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: Colors.black,
-                      size: 22,
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                      child: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: Colors.black54,
-                        size: 22,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.8),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: BorderSide(
-                        color: Colors.black.withOpacity(0.1),
-                        width: 1.5,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: BorderSide(
-                        color: Colors.black.withOpacity(0.1),
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16.0),
-                      borderSide: const BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 16,
-                    ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
                   ),
                 ),
-                const SizedBox(height: 32),
+              ),
+              const SizedBox(height: 16),
 
-                // Login Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: Material(
-                    elevation: 8,
-                    borderRadius: BorderRadius.circular(30),
-                    shadowColor: Colors.black26,
-                    child: InkWell(
-                      onTap: _isLoading ? null : _loginUser,
-                      borderRadius: BorderRadius.circular(30),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: _isLoading ? Colors.grey : Colors.black,
-                        ),
-                        child: Center(
-                          child: _isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : const Text(
-                                  'LOGIN',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1.2,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
+              // Password
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                ),
-                const SizedBox(height: 20),
-
-                // Registration Link
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
+                  prefixIcon: const Icon(
+                    Icons.lock_outline,
+                    color: Colors.black,
+                    size: 22,
+                  ),
+                  suffixIcon: GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RegistrationPage(),
-                        ),
-                      );
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
                     },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                    child: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                      color: Colors.black54,
+                      size: 22,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(
+                      color: Colors.black.withOpacity(0.1),
+                      width: 1.5,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: BorderSide(
+                      color: Colors.black.withOpacity(0.1),
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                    borderSide: const BorderSide(
+                      color: Colors.black,
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // Login Button
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: Material(
+                  elevation: 8,
+                  borderRadius: BorderRadius.circular(30),
+                  shadowColor: Colors.black26,
+                  child: InkWell(
+                    onTap: _isLoading ? null : _loginUser,
+                    borderRadius: BorderRadius.circular(30),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: _isLoading ? Colors.grey : Colors.black,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Text(
-                            "Don't have an account? ",
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black54,
-                            ),
-                          ),
-                          Text(
-                            'Register',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
+                      child: Center(
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                'LOGIN',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+
+              // Registration Link
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegistrationPage(),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text(
+                          "Don't have an account? ",
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          'Register',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
