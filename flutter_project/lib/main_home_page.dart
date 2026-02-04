@@ -3,6 +3,7 @@ import 'package:flutter_project/app_settings_page.dart';
 import 'package:flutter_project/product_detail_page.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/product_service.dart';
+import 'package:card_swiper/card_swiper.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
 import 'cart_page.dart';
@@ -18,24 +19,58 @@ class MainHomePage extends StatefulWidget {
 class _MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
   final ProductService _productService = ProductService();
-
-  late final List<Widget> _pages;
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedCategory = 'New Arrival';
+  List<Product> _searchResults = [];
+  bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
-    _pages = [
+    
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _performSearch(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _isSearching = false;
+        _searchResults = [];
+      });
+      return;
+    }
+
+    setState(() => _isSearching = true);
+    
+    try {
+      final results = await _productService.searchProducts(query);
+      setState(() {
+        _searchResults = results;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Search error: $e')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final pages = [
       _buildHomeContent(),
       _buildShopPage(),
       FavouritePage(userEmail: widget.userEmail),
       UserProfilePage(userEmail: widget.userEmail),
     ];
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
@@ -80,191 +115,283 @@ class _MainHomePageState extends State<MainHomePage> {
         centerTitle: true,
        actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined,
-                color: Colors.black),
-            onPressed: () {
-              // ✅ ONLY CHANGE: navigate to Cart Page
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CartPage(userEmail: widget.userEmail),
-                ),
-              );
-            },
-          ),
+              icon:
+                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
+              onPressed: () {}),
+          IconButton(
+              icon: const Icon(Icons.settings_outlined, color: Colors.black),
+              onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Search Bar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: Row(
-                children: [
-                  const Text('Search here',
-                      style: TextStyle(color: Colors.grey)),
-                  const Spacer(),
-                  IconButton(
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                      ),
+                    ]),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: const InputDecoration(
+                          hintText: 'Search products...',
+                          border: InputBorder.none,
+                        ),
+                        onChanged: _performSearch,
+                      ),
+                    ),
+                    IconButton(
                       icon: const Icon(Icons.search, color: Colors.grey),
-                      onPressed: () {}),
-                  IconButton(
-                      icon: const Icon(Icons.mic_none, color: Colors.grey),
-                      onPressed: () {}),
-                ],
+                      onPressed: () => _performSearch(_searchController.text),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
 
-            // Choose brand section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Choose brand',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                TextButton(onPressed: () {}, child: const Text('See All')),
-              ],
-            ),
-            const SizedBox(height: 12),
+            // Carousel
+            if (!_isSearching) _buildCarousel(),
 
-            // Brand Icons Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildBrandIcon('Beats', Icons.headphones),
-                _buildBrandIcon('Sennheiser', Icons.headset),
-                _buildBrandIcon('JBL', Icons.speaker),
-                _buildBrandIcon('Sony', Icons.speaker_group),
-              ],
-            ),
-            const SizedBox(height: 20),
+            // Category Buttons
+            if (!_isSearching) _buildCategoryButtons(),
 
-            // Category Tabs
-            Row(
-              children: [
-                _buildCategoryTab('Popular', true),
-                const SizedBox(width: 12),
-                _buildCategoryTab('Discount', false),
-                const SizedBox(width: 12),
-                _buildCategoryTab('Exclusive', false),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Products from Supabase Database
-            FutureBuilder<List<Product>>(
-              future: _productService.getAllProducts(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Column(
-                      children: [
-                        const Icon(Icons.error_outline,
-                            size: 48, color: Colors.red),
-                        const SizedBox(height: 16),
-                        Text('Error: ${snapshot.error}'),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () => setState(() {}),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text('No products available'),
-                    ),
-                  );
-                }
-
-                final products = snapshot.data!;
-
-                return GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                  ),
-                  itemCount: products.length,
-                  itemBuilder: (context, index) {
-                    return _buildProductCardFromDB(products[index]);
-                  },
-                );
-              },
-            ),
+            // Products Grid
+            _isSearching ? _buildSearchResults() : _buildCategoryProducts(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildShopPage() {
-    return const Center(child: Text('Shop Page Coming Soon'));
-  }
+  Widget _buildCarousel() {
+    final carouselImages = [
+      {'title': 'AirPods Pro', 'subtitle': '50% OFF', 'color': Colors.blue[100]},
+      {'title': 'MacBook Air', 'subtitle': 'New Arrival', 'color': Colors.purple[100]},
+      {'title': 'Apple Watch', 'subtitle': 'Best Seller', 'color': Colors.orange[100]},
+    ];
 
-  Widget _buildBrandIcon(String name, IconData icon) {
-    return Column(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, size: 30),
-        ),
-        const SizedBox(height: 8),
-        Text(name, style: const TextStyle(fontSize: 12)),
-      ],
-    );
-  }
-
-  Widget _buildCategoryTab(String title, bool isSelected) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.black : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        title,
-        style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.w500),
+      height: 180.0,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Swiper(
+        itemBuilder: (BuildContext context, int index) {
+          final item = carouselImages[index];
+          return Container(
+            decoration: BoxDecoration(
+              color: item['color'] as Color?,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item['title'] as String,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    item['subtitle'] as String,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: carouselImages.length,
+        autoplay: true,
+        autoplayDelay: 3000,
+        duration: 500,
+        viewportFraction: 0.9,
+        scale: 0.95,
+        pagination: const SwiperPagination(
+          builder: DotSwiperPaginationBuilder(
+            activeColor: Colors.blue,
+            color: Colors.grey,
+          ),
+        ),
       ),
     );
   }
 
-  // Build product card from database
-  Widget _buildProductCardFromDB(Product product) {
+  Widget _buildCategoryButtons() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildCategoryButton('New Arrival'),
+          _buildCategoryButton('Popular'),
+          _buildCategoryButton('Discount'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryButton(String category) {
+    final isSelected = _selectedCategory == category;
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _selectedCategory = category;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isSelected ? Colors.blue : Colors.white,
+            foregroundColor: isSelected ? Colors.white : Colors.black,
+            elevation: isSelected ? 4 : 1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          child: Text(category),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    if (_searchResults.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              const Text(
+                'No items found',
+                style: TextStyle(fontSize: 18, color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.7,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
+        itemCount: _searchResults.length,
+        itemBuilder: (context, index) {
+          return _buildProductCard(_searchResults[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildCategoryProducts() {
+    Future<List<Product>> productsFuture;
+
+    switch (_selectedCategory) {
+      case 'Popular':
+        productsFuture = _productService.getPopularProducts();
+        break;
+      case 'Discount':
+        productsFuture = _productService.getDiscountProducts();
+        break;
+      default:
+        productsFuture = _productService.getNewArrivals();
+    }
+
+    return FutureBuilder<List<Product>>(
+      future: productsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error: ${snapshot.error}'),
+              ],
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(32.0),
+            child: Center(child: Text('No products available')),
+          );
+        }
+
+        final products = snapshot.data!;
+
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            itemCount: products.length,
+            itemBuilder: (context, index) {
+              return _buildProductCard(products[index]);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildProductCard(Product product) {
     return GestureDetector(
       onTap: () {
-        // Navigate to product detail page
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailPage(product: product),
+            builder: (context) => ProductDetailPage(
+              product: product,
+              userEmail: widget.userEmail,
+            ),
           ),
         );
       },
@@ -333,5 +460,9 @@ class _MainHomePageState extends State<MainHomePage> {
         ),
       ),
     );
+  }
+
+  Widget _buildShopPage() {
+    return const Center(child: Text('Shop Page Coming Soon'));
   }
 }
