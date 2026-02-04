@@ -5,6 +5,7 @@ import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/product_service.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
+import 'cart_page.dart';
 
 class MainHomePage extends StatefulWidget {
   final String userEmail;
@@ -27,7 +28,7 @@ class _MainHomePageState extends State<MainHomePage> {
       _buildHomeContent(),
       _buildShopPage(),
       FavouritePage(userEmail: widget.userEmail),
-      UserProfilePage(userEmail: widget.userEmail), 
+      UserProfilePage(userEmail: widget.userEmail),
     ];
   }
 
@@ -77,14 +78,20 @@ class _MainHomePageState extends State<MainHomePage> {
           ),
         ),
         centerTitle: true,
-        actions: [
+       actions: [
           IconButton(
-              icon:
-                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-              onPressed: () {}),
-          IconButton(
-              icon: const Icon(Icons.settings_outlined, color: Colors.black),
-              onPressed: () {}),
+            icon: const Icon(Icons.shopping_cart_outlined,
+                color: Colors.black),
+            onPressed: () {
+              // ✅ ONLY CHANGE: navigate to Cart Page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(userEmail: widget.userEmail),
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: SingleChildScrollView(
