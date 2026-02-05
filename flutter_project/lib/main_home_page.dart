@@ -163,10 +163,6 @@ class _MainHomePageState extends State<MainHomePage> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.black),
-            onPressed: () {},
-          ),
         ],
       ),
       body: SingleChildScrollView(

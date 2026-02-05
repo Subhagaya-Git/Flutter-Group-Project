@@ -66,7 +66,7 @@ class CartService {
     }
   }
 
-  // Get cart items as stream
+  // Get cart items as stream with realtime updates
   Stream<List<CartItem>> getCartItems(String userEmail) {
     return _supabase
         .from('cart')
@@ -103,14 +103,24 @@ class CartService {
         });
   }
 
-  // Get cart count as stream
+  // Get cart count as stream with realtime updates
   Stream<int> getCartCount(String userEmail) {
     return _supabase
         .from('cart')
         .stream(primaryKey: ['id'])
         .eq('user_email', userEmail)
         .map((data) {
-          return data.fold<int>(0, (sum, item) => sum + (item['quantity'] as int? ?? 0));
+          return data.fold<int>(0, (sum, item) {
+            final quantity = item['quantity'];
+            if (quantity is int) {
+              return sum + quantity;
+            } else if (quantity is double) {
+              return sum + quantity.toInt();
+            } else if (quantity is String) {
+              return sum + (int.tryParse(quantity) ?? 0);
+            }
+            return sum;
+          });
         });
   }
 
