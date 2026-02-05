@@ -8,6 +8,9 @@ void main() async {
   await Supabase.initialize(
     url: 'https://mdjckakosceheneezuox.supabase.co',
     anonKey: 'sb_publishable_eZsgnC2E1LKOXqaqKPal8g_YEhRknho',
+    realtimeClientOptions: const RealtimeClientOptions(
+      logLevel: RealtimeLogLevel.info,
+    ),
   );
 
   runApp(const MyApp());
