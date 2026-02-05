@@ -1,250 +1,366 @@
 import 'package:flutter/material.dart';
-import 'main_home_page.dart';
+import 'package:flutter_project/services/favourite_service.dart';
+import 'package:flutter_project/services/cart_service.dart';
+import 'package:flutter_project/models/product.dart';
+import 'package:flutter_project/cart_page.dart';
+import 'package:flutter_project/product_detail_page.dart';
 
 class FavouritePage extends StatefulWidget {
   final String userEmail;
 
-  const FavouritePage({super.key, required this.userEmail});
+  const FavouritePage({
+    super.key,
+    required this.userEmail,
+  });
 
   @override
   State<FavouritePage> createState() => _FavouritePageState();
 }
 
 class _FavouritePageState extends State<FavouritePage> {
-  // Sample favorite products
-  final List<Map<String, dynamic>> _favorites = [
-    {
-      "title": "Noise Cancelling Headphones",
-      "price": "\$249.95",
-      "color": Colors.grey[300],
-      "isHot": true,
-      "rating": 4.5,
-      "reviews": 120
-    },
-    {
-      "title": "Premium Headphones",
-      "price": "\$199.95",
-      "color": Colors.pink[50],
-      "isHot": false,
-      "rating": 4.2,
-      "reviews": 95
-    },
-    {
-      "title": "Wireless Speakers",
-      "price": "\$159.95",
-      "color": Colors.grey[300],
-      "isHot": false,
-      "rating": 4.0,
-      "reviews": 80
-    },
-    {
-      "title": "Classic All-Day Headphones",
-      "price": "\$289.95",
-      "color": Colors.pink[50],
-      "isHot": true,
-      "rating": 4.8,
-      "reviews": 150
-    },
-  ];
+  final FavouriteService _favouriteService = FavouriteService();
+  final CartService _cartService = CartService();
+
+  Future<void> _removeFromFavourites(String productId, String productName) async {
+    try {
+      await _favouriteService.removeFavourite(widget.userEmail, productId);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$productName removed from favourites'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to remove: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showDeleteConfirmation(String productId, String productName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove from Favourites'),
+        content: Text('Remove $productName from your favourites?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _removeFromFavourites(productId, productName);
+            },
+            child: const Text(
+              'Remove',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MainHomePage(
-                  userEmail: widget.userEmail, 
-                ),
-              ),
-            );
-          },
-        ),
-        title: const Text(
-          'My Favorites',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        centerTitle: true,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.grey.shade100, Colors.grey.shade200],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+        title: const Text(
+          'My Favourites',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: _favorites.length,
-          itemBuilder: (context, index) {
-            final item = _favorites[index];
-            return Dismissible(
-              key: Key(item["title"]),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(Icons.delete, color: Colors.white),
-              ),
-              onDismissed: (direction) {
-                setState(() {
-                  _favorites.removeAt(index);
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("${item["title"]} removed from favorites"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          StreamBuilder<int>(
+            stream: _cartService.getCartCount(widget.userEmail),
+            builder: (context, snapshot) {
+              final count = snapshot.data ?? 0;
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.shopping_cart_outlined,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartPage(
+                            userEmail: widget.userEmail,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-              child: _buildFavoriteCard(
-                title: item["title"],
-                price: item["price"],
-                imageColor: item["color"],
-                isHot: item["isHot"],
-                rating: item["rating"],
-                reviews: item["reviews"],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFavoriteCard({
-    required String title,
-    required String price,
-    required Color imageColor,
-    bool isHot = false,
-    double rating = 0.0,
-    int reviews = 0,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 6,
-      shadowColor: Colors.black.withOpacity(0.1),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            // Product Image + HOT badge
-            Stack(
-              children: [
-                Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    color: imageColor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.headphones, size: 40, color: Colors.grey),
-                  ),
-                ),
-                if (isHot)
-                  Positioned(
-                    top: -4,
-                    right: -4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Text(
-                        'HOT',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                  if (count > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 16),
+                ],
+              );
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: StreamBuilder<List<Product>>(
+        stream: _favouriteService.getFavouriteProducts(widget.userEmail),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            // Product Info
-            Expanded(
+          if (snapshot.hasError) {
+            return Center(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Icon(Icons.error_outline, size: 60, color: Colors.red[300]),
+                  const SizedBox(height: 16),
                   Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    'Error loading favourites',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.amber[600], size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        "$rating ($reviews reviews)",
-                        style: const TextStyle(
-                            fontSize: 13, color: Colors.black54),
-                      ),
-                    ],
+                    snapshot.error.toString(),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
-            ),
+            );
+          }
 
-            // Favorite / Remove Button
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+          final favourites = snapshot.data ?? [];
+
+          if (favourites.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_border,
+                    size: 100,
+                    color: Colors.grey[300],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No favourites yet',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Start adding items you love',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
                   ),
                 ],
               ),
-              child: IconButton(
-                icon: const Icon(Icons.favorite, color: Colors.red),
-                onPressed: () {
-                  // TODO: remove from favorites
-                },
-              ),
-            ),
-          ],
-        ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: favourites.length,
+            itemBuilder: (context, index) {
+              final product = favourites[index];
+
+              return Card(
+                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailPage(
+                          product: product,
+                          userEmail: widget.userEmail,
+                        ),
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        // Product Image
+                        Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              Icons.headphones,
+                              size: 50,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+
+                        // Product Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.brand,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                product.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    color: Colors.orange,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${product.rating}',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '(${product.reviewCount})',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Icon(
+                                    product.inStock
+                                        ? Icons.check_circle
+                                        : Icons.cancel,
+                                    color: product.inStock
+                                        ? Colors.green
+                                        : Colors.red,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    product.inStock ? 'In Stock' : 'Out of Stock',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: product.inStock
+                                          ? Colors.green
+                                          : Colors.red,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Delete Button
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 28,
+                          ),
+                          onPressed: () => _showDeleteConfirmation(
+                            product.id,
+                            product.name,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
