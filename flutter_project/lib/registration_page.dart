@@ -21,7 +21,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
-  bool _isLoginLoading = false; // ✅ added
+  bool _isLoginLoading = false;
 
   final _supabase = Supabase.instance.client;
 
@@ -108,21 +108,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFF2F2F7),
-              Color(0xFFE5ECF4),
-            ],
-          ),
-        ),
+      backgroundColor: Colors.white,
+      body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
                 "Create Account",
@@ -133,21 +125,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
               ),
               const SizedBox(height: 32),
-
               _buildTextField(
                 controller: _firstNameController,
                 label: 'First Name',
                 icon: Icons.person,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 controller: _lastNameController,
                 label: 'Last Name',
                 icon: Icons.person_outline,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 controller: _emailController,
                 label: 'Email Address',
@@ -155,7 +144,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
-
               _buildTextField(
                 controller: _mobileController,
                 label: 'Mobile Number',
@@ -163,7 +151,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 16),
-
               _buildPasswordTextField(
                 controller: _passwordController,
                 label: 'Password',
@@ -176,7 +163,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
               ),
               const SizedBox(height: 16),
-
               _buildPasswordTextField(
                 controller: _confirmPasswordController,
                 label: 'Confirm Password',
@@ -189,8 +175,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 },
               ),
               const SizedBox(height: 32),
-
-              // Register Button (UNCHANGED)
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -225,10 +209,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // ✅ LOGIN WITH SPINNER (ONLY CHANGE HERE)
               Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -324,8 +305,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         labelText: label,
         prefixIcon: Icon(icon),
         suffixIcon: IconButton(
-          icon: Icon(
-              obscurePassword ? Icons.visibility_off : Icons.visibility),
+          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
           onPressed: onToggleVisibility,
         ),
         border: OutlineInputBorder(
