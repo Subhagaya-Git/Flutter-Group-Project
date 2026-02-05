@@ -87,12 +87,11 @@ class ProductService {
       final response = await _supabase
           .from('products')
           .select()
-          .gte('rating', 4.5)
-          .gte('review_count', 1000)
-          .order('price', ascending: true)
+          .not('discount_percentage', 'is', null)
+          .order('discount_percentage', ascending: false)
           .limit(10);
       
-      print('Discount Products Response: $response'); // Debug print
+      print('Discount Products Response: $response'); 
       
       return (response as List)
           .map((json) => Product.fromJson(json))

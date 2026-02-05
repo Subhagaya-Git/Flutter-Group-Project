@@ -12,6 +12,7 @@ class Product {
   final bool inStock;
   final int stockQuantity;
   final DateTime createdAt;
+  final int? discountPercentage; 
 
   Product({
     required this.id,
@@ -27,6 +28,7 @@ class Product {
     required this.inStock,
     required this.stockQuantity,
     required this.createdAt,
+    this.discountPercentage,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,7 @@ class Product {
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at']) 
           : DateTime.now(),
+      discountPercentage: json['discount_percentage'],
     );
   }
 

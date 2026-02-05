@@ -3,6 +3,7 @@ import 'package:flutter_project/app_settings_page.dart';
 import 'package:flutter_project/product_detail_page.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/product_service.dart';
+import 'package:flutter_project/services/cart_service.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
@@ -19,15 +20,15 @@ class MainHomePage extends StatefulWidget {
 class _MainHomePageState extends State<MainHomePage> {
   int _selectedIndex = 0;
   final ProductService _productService = ProductService();
+  final CartService _cartService = CartService();
   final TextEditingController _searchController = TextEditingController();
-  String _selectedCategory = 'New Arrival';
+  String _selectedCategory = 'New';
   List<Product> _searchResults = [];
   bool _isSearching = false;
 
   @override
   void initState() {
     super.initState();
-    
   }
 
   @override
@@ -61,7 +62,6 @@ class _MainHomePageState extends State<MainHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final pages = [
       _buildHomeContent(),
       _buildShopPage(),
@@ -96,14 +96,15 @@ class _MainHomePageState extends State<MainHomePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const AppSettingsPage()),
-              );
-            }),
+          icon: const Icon(Icons.menu, color: Colors.black),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AppSettingsPage()),
+            );
+          },
+        ),
         title: const Text(
           'AppleMart',
           style: TextStyle(
@@ -113,35 +114,80 @@ class _MainHomePageState extends State<MainHomePage> {
           ),
         ),
         centerTitle: true,
-       actions: [
+        actions: [
+          StreamBuilder<int>(
+            stream: _cartService.getCartCount(widget.userEmail),
+            builder: (context, snapshot) {
+              final count = snapshot.data ?? 0;
+              return Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart_outlined,
+                        color: Colors.black),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              CartPage(userEmail: widget.userEmail),
+                        ),
+                      );
+                    },
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 18,
+                          minHeight: 18,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           IconButton(
-              icon:
-                  const Icon(Icons.shopping_cart_outlined, color: Colors.black),
-              onPressed: () {}),
-          IconButton(
-              icon: const Icon(Icons.settings_outlined, color: Colors.black),
-              onPressed: () {}),
+            icon: const Icon(Icons.settings_outlined, color: Colors.black),
+            onPressed: () {},
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                      ),
-                    ]),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -162,14 +208,8 @@ class _MainHomePageState extends State<MainHomePage> {
                 ),
               ),
             ),
-
-            // Carousel
             if (!_isSearching) _buildCarousel(),
-
-            // Category Buttons
             if (!_isSearching) _buildCategoryButtons(),
-
-            // Products Grid
             _isSearching ? _buildSearchResults() : _buildCategoryProducts(),
           ],
         ),
@@ -243,7 +283,7 @@ class _MainHomePageState extends State<MainHomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildCategoryButton('New Arrival'),
+          _buildCategoryButton('New'),
           _buildCategoryButton('Popular'),
           _buildCategoryButton('Discount'),
         ],
@@ -374,7 +414,10 @@ class _MainHomePageState extends State<MainHomePage> {
             ),
             itemCount: products.length,
             itemBuilder: (context, index) {
-              return _buildProductCard(products[index]);
+              return _buildProductCard(
+                products[index],
+                category: _selectedCategory,
+              );
             },
           ),
         );
@@ -382,7 +425,7 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  Widget _buildProductCard(Product product) {
+  Widget _buildProductCard(Product product, {String category = 'New'}) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -415,7 +458,7 @@ class _MainHomePageState extends State<MainHomePage> {
                           size: 80, color: Colors.grey[600]),
                     ),
                   ),
-                  if (product.rating >= 4.5)
+                  if (category == 'New' && product.rating >= 4.5)
                     Positioned(
                       top: 16,
                       right: 16,
@@ -430,6 +473,52 @@ class _MainHomePageState extends State<MainHomePage> {
                                 color: Colors.white,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  if (category == 'Popular')
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star, 
+                                color: Colors.white, size: 12),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${product.rating}',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  if (category == 'Discount' && product.discountPercentage != null)
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          '${product.discountPercentage}% OFF',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                 ],
@@ -448,11 +537,28 @@ class _MainHomePageState extends State<MainHomePage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
+                  if (category == 'Discount' && product.discountPercentage != null) ...[
+                    Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                    Text(
+                      '\$${(product.price * (1 - product.discountPercentage! / 100)).toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red),
+                    ),
+                  ] else
+                    Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                 ],
               ),
             ),
