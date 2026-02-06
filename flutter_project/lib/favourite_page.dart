@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/main_home_page.dart';
 import 'package:flutter_project/services/favourite_service.dart';
 import 'package:flutter_project/services/cart_service.dart';
 import 'package:flutter_project/models/product.dart';
@@ -21,10 +22,11 @@ class _FavouritePageState extends State<FavouritePage> {
   final FavouriteService _favouriteService = FavouriteService();
   final CartService _cartService = CartService();
 
-  Future<void> _removeFromFavourites(String productId, String productName) async {
+  Future<void> _removeFromFavourites(
+      String productId, String productName) async {
     try {
       await _favouriteService.removeFavourite(widget.userEmail, productId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -80,6 +82,17 @@ class _FavouritePageState extends State<FavouritePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainHomePage(userEmail: widget.userEmail),
+              ),
+            );
+          },
+        ),
         title: const Text(
           'My Favourites',
           style: TextStyle(
@@ -326,7 +339,9 @@ class _FavouritePageState extends State<FavouritePage> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    product.inStock ? 'In Stock' : 'Out of Stock',
+                                    product.inStock
+                                        ? 'In Stock'
+                                        : 'Out of Stock',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: product.inStock

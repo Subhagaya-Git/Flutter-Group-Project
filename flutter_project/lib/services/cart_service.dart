@@ -30,6 +30,8 @@ class CartService {
   // Add item to cart
   Future<void> addToCart(String userEmail, Product product, int quantity) async {
     try {
+      print('Adding to cart - Email: $userEmail, Product: ${product.name}, Qty: $quantity');
+      
       // Check if item already exists
       final existingItems = await _supabase
           .from('cart')
@@ -37,19 +39,30 @@ class CartService {
           .eq('user_email', userEmail)
           .eq('product_id', product.id);
 
+      print('Existing cart items: $existingItems');
+
       if (existingItems.isNotEmpty) {
         // Update quantity
         final currentQuantity = existingItems[0]['quantity'] ?? 0;
-        await _supabase
+        final newQuantity = currentQuantity + quantity;
+        
+        print('Updating quantity to: $newQuantity');
+        
+        final result = await _supabase
             .from('cart')
             .update({
-              'quantity': currentQuantity + quantity,
+              'quantity': newQuantity,
               'updated_at': DateTime.now().toIso8601String(),
             })
-            .eq('id', existingItems[0]['id']);
+            .eq('id', existingItems[0]['id'])
+            .select();
+        
+        print('Cart updated: $result');
       } else {
         // Insert new item
-        await _supabase.from('cart').insert({
+        print('Inserting new cart item');
+        
+        final result = await _supabase.from('cart').insert({
           'user_email': userEmail,
           'product_id': product.id,
           'product_name': product.name,
@@ -59,21 +72,28 @@ class CartService {
           'quantity': quantity,
           'created_at': DateTime.now().toIso8601String(),
           'updated_at': DateTime.now().toIso8601String(),
-        });
+        }).select();
+        
+        print('Cart item added: $result');
       }
     } catch (e) {
+      print('Error adding to cart: $e');
       throw Exception('Failed to add to cart: $e');
     }
   }
 
   // Get cart items as stream with realtime updates
   Stream<List<CartItem>> getCartItems(String userEmail) {
+    print('Getting cart items stream for: $userEmail');
+    
     return _supabase
         .from('cart')
         .stream(primaryKey: ['id'])
         .eq('user_email', userEmail)
         .order('created_at', ascending: false)
         .map((data) {
+          print('Cart stream data: ${data.length} items');
+          
           return data.map((item) {
             final product = Product(
               id: item['product_id']?.toString() ?? '',
