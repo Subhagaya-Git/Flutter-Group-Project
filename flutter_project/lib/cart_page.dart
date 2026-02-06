@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/services/cart_service.dart';
+import 'package:flutter_project/final_checkout_page.dart';
 
 class CartPage extends StatefulWidget {
   final String userEmail;
@@ -19,7 +20,7 @@ class _CartPageState extends State<CartPage> {
   Future<void> _removeItem(String cartItemId, String productName) async {
     try {
       await _cartService.removeFromCart(widget.userEmail, cartItemId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -303,11 +304,17 @@ class _CartPageState extends State<CartPage> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Navigate to checkout
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Proceeding to checkout...'),
-                              backgroundColor: Colors.green,
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FinalCheckoutPage(
+                                userEmail: widget.userEmail,
+                                cartItems: cartItems,
+                                subtotal: subtotal,
+                                shipping: shipping,
+                                tax: tax,
+                                total: total,
+                              ),
                             ),
                           );
                         },
