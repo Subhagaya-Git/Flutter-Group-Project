@@ -3,6 +3,7 @@ import 'package:flutter_project/cart_page.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/favourite_service.dart';
 import 'package:flutter_project/services/cart_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
@@ -186,57 +187,38 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           // Image Carousel
           SizedBox(
             height: 300,
-            child: Stack(
-              children: [
-                PageView.builder(
-                  itemCount: widget.product.images.isNotEmpty
-                      ? widget.product.images.length
-                      : 1,
-                  onPageChanged: (index) {
-                    setState(() => _currentImageIndex = index);
-                  },
-                  itemBuilder: (context, index) {
-                    return Container(
-                      margin: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          Icons.headphones,
-                          size: 150,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                if (widget.product.images.length > 1)
-                  Positioned(
-                    bottom: 20,
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        widget.product.images.length,
-                        (index) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: _currentImageIndex == index ? 24 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: _currentImageIndex == index
-                                ? Colors.black
-                                : Colors.grey[400],
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
+            child: widget.product.images.isEmpty
+                ? Container(
+                    color: Colors.grey[200],
+                    child: const Center(
+                      child: Icon(Icons.image, size: 100, color: Colors.grey),
                     ),
+                  )
+                : PageView.builder(
+                    itemCount: widget.product.images.length,
+                    onPageChanged: (index) {
+                      setState(() => _currentImageIndex = index);
+                    },
+                    itemBuilder: (context, index) {
+                      return CachedNetworkImage(
+                        imageUrl: widget.product.images[index],
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) {
+                          print('Image error: $error');
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Center(
+                              child: Icon(Icons.broken_image,
+                                  size: 100, color: Colors.grey),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
-              ],
-            ),
           ),
 
           // Product Info

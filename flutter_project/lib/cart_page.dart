@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/services/cart_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_project/final_checkout_page.dart';
 
 class CartPage extends StatefulWidget {
@@ -187,12 +188,42 @@ class _CartPageState extends State<CartPage> {
                                 color: Colors.grey[100],
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.headphones,
-                                  size: 40,
-                                  color: Colors.grey[400],
-                                ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: product.images.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: product.images[0],
+                                        width: 80,
+                                        height: 80,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Center(
+                                          child: SizedBox(
+                                            width: 25,
+                                            height: 25,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: Colors.blue,
+                                            ),
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) {
+                                          print('Cart image error: $error');
+                                          return Center(
+                                            child: Icon(
+                                              Icons.broken_image,
+                                              size: 40,
+                                              color: Colors.grey[400],
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Icon(
+                                          Icons.image,
+                                          size: 40,
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(width: 12),
