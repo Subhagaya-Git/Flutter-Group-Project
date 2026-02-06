@@ -4,6 +4,7 @@ import 'package:flutter_project/services/cart_service.dart';
 import 'services/product_service.dart';
 import 'product_detail_page.dart';
 import 'models/product.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CategoryDetailsPage extends StatefulWidget {
   final String category;
@@ -187,21 +188,24 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                   borderRadius: BorderRadius.circular(12),
                   child: product['images'] != null &&
                           (product['images'] as List).isNotEmpty
-                      ? Image.network(
-                          product['images'][0],
+                      ? CachedNetworkImage(
+                          imageUrl: (product['images'] as List)[0],
+                          width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.image,
-                              size: 40,
-                              color: Colors.grey,
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (context, url, error) {
+                            print('Image error: $error');
+                            return const Center(
+                              child: Icon(Icons.broken_image,
+                                  size: 50, color: Colors.grey),
                             );
                           },
                         )
-                      : const Icon(
-                          Icons.image,
-                          size: 40,
-                          color: Colors.grey,
+                      : const Center(
+                          child:
+                              Icon(Icons.image, size: 50, color: Colors.grey),
                         ),
                 ),
               ),

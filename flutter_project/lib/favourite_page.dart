@@ -5,6 +5,7 @@ import 'package:flutter_project/services/cart_service.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/cart_page.dart';
 import 'package:flutter_project/product_detail_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class FavouritePage extends StatefulWidget {
   final String userEmail;
@@ -258,12 +259,42 @@ class _FavouritePageState extends State<FavouritePage> {
                             color: Colors.grey[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Center(
-                            child: Icon(
-                              Icons.headphones,
-                              size: 50,
-                              color: Colors.grey[400],
-                            ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: product.images.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: product.images[0],
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => Center(
+                                      child: SizedBox(
+                                        width: 30,
+                                        height: 30,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) {
+                                      print('Favourite image error: $error');
+                                      return Center(
+                                        child: Icon(
+                                          Icons.broken_image,
+                                          size: 50,
+                                          color: Colors.grey[400],
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Center(
+                                    child: Icon(
+                                      Icons.image,
+                                      size: 50,
+                                      color: Colors.grey[400],
+                                    ),
+                                  ),
                           ),
                         ),
                         const SizedBox(width: 16),

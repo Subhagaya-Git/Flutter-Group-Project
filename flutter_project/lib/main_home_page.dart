@@ -9,6 +9,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
 import 'cart_page.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MainHomePage extends StatefulWidget {
   final String userEmail;
@@ -214,74 +215,200 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget _buildCarousel() {
-    final carouselImages = [
-      {
-        'title': 'AirPods Pro',
-        'subtitle': '50% OFF',
-        'color': Colors.blue[100]
-      },
-      {
-        'title': 'MacBook Air',
-        'subtitle': 'New Arrival',
-        'color': Colors.purple[100]
-      },
-      {
-        'title': 'Apple Watch',
-        'subtitle': 'Best Seller',
-        'color': Colors.orange[100]
-      },
-    ];
+    return FutureBuilder<List<Product>>(
+      future: _productService.getPopularProducts(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const SizedBox(height: 180);
+        }
 
-    return Container(
-      height: 180.0,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Swiper(
-        itemBuilder: (BuildContext context, int index) {
-          final item = carouselImages[index];
-          return Container(
-            decoration: BoxDecoration(
-              color: item['color'] as Color?,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item['title'] as String,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+        final products = snapshot.data!.take(3).toList();
+
+        return Container(
+          height: 180.0,
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Swiper(
+            itemBuilder: (BuildContext context, int index) {
+              final product = products[index];
+              print('Carousel product $index: ${product.name}');
+              print(
+                  'Carousel image URL: ${product.images.isNotEmpty ? product.images[0] : "No image"}');
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(
+                        product: product,
+                        userEmail: widget.userEmail,
+                      ),
                     ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.grey[100],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    item['subtitle'] as String,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  child: Stack(
+                    children: [
+                      // Background Product Image
+                      if (product.images.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: product.images[0],
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[200],
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) {
+                              print('============================');
+                              print('Carousel Image Error:');
+                              print('Product: ${product.name}');
+                              print('URL: $url');
+                              print('Error: $error');
+                              print('============================');
+                              return Container(
+                                color: Colors.grey[200],
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.broken_image,
+                                        size: 60, color: Colors.grey),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      product.name,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      else
+                        // Fallback for products with no images
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      // Dark Overlay
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.black.withOpacity(0.3),
+                              Colors.black.withOpacity(0.7),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Text Content
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.name,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                if (product.discountPercentage != null)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '${product.discountPercentage}% OFF',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '\$${product.price.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+              );
+            },
+            itemCount: products.length,
+            autoplay: true,
+            autoplayDelay: 3000,
+            duration: 500,
+            viewportFraction: 0.9,
+            scale: 0.95,
+            pagination: const SwiperPagination(
+              builder: DotSwiperPaginationBuilder(
+                activeColor: Colors.white,
+                color: Colors.white54,
               ),
             ),
-          );
-        },
-        itemCount: carouselImages.length,
-        autoplay: true,
-        autoplayDelay: 3000,
-        duration: 500,
-        viewportFraction: 0.9,
-        scale: 0.95,
-        pagination: const SwiperPagination(
-          builder: DotSwiperPaginationBuilder(
-            activeColor: Colors.blue,
-            color: Colors.grey,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -461,9 +588,42 @@ class _MainHomePageState extends State<MainHomePage> {
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Center(
-                      child: Icon(Icons.headphones,
-                          size: 80, color: Colors.grey[600]),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: product.images.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: product.images[0],
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Center(
+                                child: SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) {
+                                print('Home product image error: $error');
+                                return Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    size: 60,
+                                    color: Colors.grey[400],
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Icon(
+                                Icons.image,
+                                size: 60,
+                                color: Colors.grey[400],
+                              ),
+                            ),
                     ),
                   ),
                   if (category == 'New' && product.rating >= 4.5)
