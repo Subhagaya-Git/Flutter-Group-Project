@@ -7,6 +7,8 @@ class FavouriteService {
   // Add product to favourites
   Future<void> addFavourite(String userEmail, String productId) async {
     try {
+      print('Adding to favourites - Email: $userEmail, ProductID: $productId');
+      
       // Check if already exists
       final existing = await _supabase
           .from('favourites')
@@ -14,14 +16,21 @@ class FavouriteService {
           .eq('user_email', userEmail)
           .eq('product_id', productId);
 
+      print('Existing favourites: $existing');
+
       if (existing.isEmpty) {
-        await _supabase.from('favourites').insert({
+        final result = await _supabase.from('favourites').insert({
           'user_email': userEmail,
           'product_id': productId,
           'created_at': DateTime.now().toIso8601String(),
-        });
+        }).select();
+        
+        print('Favourite added successfully: $result');
+      } else {
+        print('Product already in favourites');
       }
     } catch (e) {
+      print('Error adding favourite: $e');
       throw Exception('Failed to add favourite: $e');
     }
   }
@@ -29,12 +38,17 @@ class FavouriteService {
   // Remove product from favourites
   Future<void> removeFavourite(String userEmail, String productId) async {
     try {
+      print('Removing from favourites - Email: $userEmail, ProductID: $productId');
+      
       await _supabase
           .from('favourites')
           .delete()
           .eq('user_email', userEmail)
           .eq('product_id', productId);
+      
+      print('Favourite removed successfully');
     } catch (e) {
+      print('Error removing favourite: $e');
       throw Exception('Failed to remove favourite: $e');
     }
   }
@@ -42,26 +56,34 @@ class FavouriteService {
   // Check if product is in favourites
   Future<bool> isFavourite(String userEmail, String productId) async {
     try {
+      print('Checking favourite - Email: $userEmail, ProductID: $productId');
+      
       final result = await _supabase
           .from('favourites')
           .select()
           .eq('user_email', userEmail)
           .eq('product_id', productId);
 
+      print('Is favourite result: ${result.isNotEmpty}');
       return result.isNotEmpty;
     } catch (e) {
+      print('Error checking favourite: $e');
       return false;
     }
   }
 
   // Get all favourite products with full details as stream
   Stream<List<Product>> getFavouriteProducts(String userEmail) {
+    print('Getting favourite products stream for: $userEmail');
+    
     return _supabase
         .from('favourites')
         .stream(primaryKey: ['id'])
         .eq('user_email', userEmail)
         .order('created_at', ascending: false)
         .asyncMap((favourites) async {
+          print('Favourites stream data: ${favourites.length} items');
+          
           if (favourites.isEmpty) return <Product>[];
 
           // Get product IDs
@@ -70,6 +92,8 @@ class FavouriteService {
               .where((id) => id.isNotEmpty)
               .toList();
 
+          print('Product IDs: $productIds');
+
           if (productIds.isEmpty) return <Product>[];
 
           // Fetch full product details
@@ -77,6 +101,8 @@ class FavouriteService {
               .from('products')
               .select()
               .inFilter('id', productIds);
+
+          print('Products fetched: ${products.length}');
 
           return products.map((data) {
             return Product(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/app_settings_page.dart';
+import 'package:flutter_project/category_page.dart';
 import 'package:flutter_project/product_detail_page.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/product_service.dart';
@@ -47,7 +48,7 @@ class _MainHomePageState extends State<MainHomePage> {
     }
 
     setState(() => _isSearching = true);
-    
+
     try {
       final results = await _productService.searchProducts(query);
       setState(() {
@@ -100,8 +101,7 @@ class _MainHomePageState extends State<MainHomePage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (context) => const AppSettingsPage()),
+              MaterialPageRoute(builder: (context) => const AppSettingsPage()),
             );
           },
         ),
@@ -215,9 +215,21 @@ class _MainHomePageState extends State<MainHomePage> {
 
   Widget _buildCarousel() {
     final carouselImages = [
-      {'title': 'AirPods Pro', 'subtitle': '50% OFF', 'color': Colors.blue[100]},
-      {'title': 'MacBook Air', 'subtitle': 'New Arrival', 'color': Colors.purple[100]},
-      {'title': 'Apple Watch', 'subtitle': 'Best Seller', 'color': Colors.orange[100]},
+      {
+        'title': 'AirPods Pro',
+        'subtitle': '50% OFF',
+        'color': Colors.blue[100]
+      },
+      {
+        'title': 'MacBook Air',
+        'subtitle': 'New Arrival',
+        'color': Colors.purple[100]
+      },
+      {
+        'title': 'Apple Watch',
+        'subtitle': 'Best Seller',
+        'color': Colors.orange[100]
+      },
     ];
 
     return Container(
@@ -484,7 +496,7 @@ class _MainHomePageState extends State<MainHomePage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star, 
+                            const Icon(Icons.star,
                                 color: Colors.white, size: 12),
                             const SizedBox(width: 4),
                             Text(
@@ -498,7 +510,8 @@ class _MainHomePageState extends State<MainHomePage> {
                         ),
                       ),
                     ),
-                  if (category == 'Discount' && product.discountPercentage != null)
+                  if (category == 'Discount' &&
+                      product.discountPercentage != null)
                     Positioned(
                       top: 16,
                       right: 16,
@@ -533,7 +546,8 @@ class _MainHomePageState extends State<MainHomePage> {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  if (category == 'Discount' && product.discountPercentage != null) ...[
+                  if (category == 'Discount' &&
+                      product.discountPercentage != null) ...[
                     Text(
                       '\$${product.price.toStringAsFixed(2)}',
                       style: TextStyle(
@@ -565,6 +579,8 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget _buildShopPage() {
-    return const Center(child: Text('Shop Page Coming Soon'));
+    return CategoryPage(
+      userEmail: widget.userEmail,
+    );
   }
 }
