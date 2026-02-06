@@ -47,7 +47,7 @@ class ProductService {
           .order('created_at', ascending: false)
           .limit(20);
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         print('No new arrivals found');
         return [];
       }
@@ -89,7 +89,7 @@ class ProductService {
           .order('review_count', ascending: false)
           .limit(20); // Get more to filter
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         print('No popular products found');
         return [];
       }
@@ -135,7 +135,7 @@ class ProductService {
           .order('discount_percentage', ascending: false)
           .limit(20);
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         print('No discount products found');
         return [];
       }
