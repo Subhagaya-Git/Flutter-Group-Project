@@ -5,7 +5,7 @@ import 'package:flutter_project/models/user_model.dart';
 import 'package:flutter_project/services/user_service.dart';
 
 class UserProfilePage extends StatefulWidget {
-  final String userEmail; 
+  final String userEmail;
 
   const UserProfilePage({super.key, required this.userEmail});
 
@@ -159,18 +159,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton.icon(
-                            onPressed: () async {
-                              await _userService.signOut();
-                              if (mounted) {
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginPage(),
-                                  ),
-                                  (route) => false,
-                                );
-                              }
-                            },
+                            onPressed: () => _confirmSignOut(),
                             icon: const Icon(Icons.logout, color: Colors.white),
                             label: const Text(
                               'Sign Out',
@@ -272,7 +261,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
             fontWeight: FontWeight.w500,
           ),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
         onTap: onTap,
       ),
     );
@@ -281,7 +271,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   // Edit Profile Dialog
   void _showEditProfileDialog() {
     final nameController = TextEditingController(text: _currentUser!.fullName);
-    final phoneController = TextEditingController(text: _currentUser!.phoneNumber ?? '');
+    final phoneController =
+        TextEditingController(text: _currentUser!.phoneNumber ?? '');
 
     showDialog(
       context: context,
@@ -354,7 +345,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.email_outlined, color: Colors.grey[600], size: 20),
+                    Icon(Icons.email_outlined,
+                        color: Colors.grey[600], size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -386,7 +378,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline, color: Colors.black87),
+                  prefixIcon:
+                      const Icon(Icons.person_outline, color: Colors.black87),
                   hintText: 'Enter your full name',
                   filled: true,
                   fillColor: Colors.white,
@@ -400,9 +393,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.black87, width: 2),
+                    borderSide:
+                        const BorderSide(color: Colors.black87, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 ),
               ),
               const SizedBox(height: 20),
@@ -421,7 +416,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
               TextField(
                 controller: phoneController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.phone_outlined, color: Colors.black87),
+                  prefixIcon:
+                      const Icon(Icons.phone_outlined, color: Colors.black87),
                   hintText: 'Enter your phone number',
                   filled: true,
                   fillColor: Colors.white,
@@ -435,9 +431,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.black87, width: 2),
+                    borderSide:
+                        const BorderSide(color: Colors.black87, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 ),
                 keyboardType: TextInputType.phone,
               ),
@@ -484,8 +482,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           _currentUser!.id,
                           {
                             'full_name': nameController.text.trim(),
-                            'phone_number': phoneController.text.trim().isEmpty 
-                                ? null 
+                            'phone_number': phoneController.text.trim().isEmpty
+                                ? null
                                 : phoneController.text.trim(),
                           },
                         );
@@ -498,7 +496,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 content: Row(
                                   children: const [
-                                    Icon(Icons.check_circle, color: Colors.white),
+                                    Icon(Icons.check_circle,
+                                        color: Colors.white),
                                     SizedBox(width: 12),
                                     Text(
                                       'Profile updated successfully!',
@@ -524,7 +523,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 content: Row(
                                   children: const [
-                                    Icon(Icons.error_outline, color: Colors.white),
+                                    Icon(Icons.error_outline,
+                                        color: Colors.white),
                                     SizedBox(width: 12),
                                     Text(
                                       'Failed to update profile',
@@ -574,7 +574,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   // Edit Address Dialog
   void _showEditAddressDialog() {
-    final addressController = TextEditingController(text: _currentUser!.shippingAddress ?? '');
+    final addressController =
+        TextEditingController(text: _currentUser!.shippingAddress ?? '');
 
     showDialog(
       context: context,
@@ -641,7 +642,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
               TextField(
                 controller: addressController,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.home_outlined, color: Colors.black87),
+                  prefixIcon:
+                      const Icon(Icons.home_outlined, color: Colors.black87),
                   hintText: 'Enter your shipping address',
                   filled: true,
                   fillColor: Colors.white,
@@ -655,9 +657,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.black87, width: 2),
+                    borderSide:
+                        const BorderSide(color: Colors.black87, width: 2),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 ),
                 maxLines: 3,
               ),
@@ -693,9 +697,10 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         final success = await _userService.updateUser(
                           _currentUser!.id,
                           {
-                            'shipping_address': addressController.text.trim().isEmpty 
-                                ? null 
-                                : addressController.text.trim(),
+                            'shipping_address':
+                                addressController.text.trim().isEmpty
+                                    ? null
+                                    : addressController.text.trim(),
                           },
                         );
 
@@ -707,7 +712,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 content: Row(
                                   children: const [
-                                    Icon(Icons.check_circle, color: Colors.white),
+                                    Icon(Icons.check_circle,
+                                        color: Colors.white),
                                     SizedBox(width: 12),
                                     Text(
                                       'Address updated successfully!',
@@ -844,7 +850,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     prefixIcon: const Icon(Icons.lock, color: Colors.black87),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        obscureCurrent ? Icons.visibility_off : Icons.visibility,
+                        obscureCurrent
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: Colors.grey[600],
                       ),
                       onPressed: () {
@@ -866,7 +874,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.black87, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.black87, width: 2),
                     ),
                   ),
                 ),
@@ -887,7 +896,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   controller: newPasswordController,
                   obscureText: obscureNew,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_open, color: Colors.black87),
+                    prefixIcon:
+                        const Icon(Icons.lock_open, color: Colors.black87),
                     suffixIcon: IconButton(
                       icon: Icon(
                         obscureNew ? Icons.visibility_off : Icons.visibility,
@@ -912,7 +922,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.black87, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.black87, width: 2),
                     ),
                   ),
                 ),
@@ -933,10 +944,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   controller: confirmPasswordController,
                   obscureText: obscureConfirm,
                   decoration: InputDecoration(
-                    prefixIcon: const Icon(Icons.lock_reset, color: Colors.black87),
+                    prefixIcon:
+                        const Icon(Icons.lock_reset, color: Colors.black87),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                        obscureConfirm
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                         color: Colors.grey[600],
                       ),
                       onPressed: () {
@@ -958,7 +972,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.black87, width: 2),
+                      borderSide:
+                          const BorderSide(color: Colors.black87, width: 2),
                     ),
                   ),
                 ),
@@ -1003,7 +1018,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             return;
                           }
 
-                          if (newPasswordController.text != confirmPasswordController.text) {
+                          if (newPasswordController.text !=
+                              confirmPasswordController.text) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('New passwords do not match'),
@@ -1016,7 +1032,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           if (newPasswordController.text.length < 6) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Password must be at least 6 characters'),
+                                content: Text(
+                                    'Password must be at least 6 characters'),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -1035,7 +1052,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                               SnackBar(
                                 content: Row(
                                   children: const [
-                                    Icon(Icons.check_circle, color: Colors.white),
+                                    Icon(Icons.check_circle,
+                                        color: Colors.white),
                                     SizedBox(width: 12),
                                     Text(
                                       'Password changed successfully!',
@@ -1058,7 +1076,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Current password is incorrect'),
+                                  content:
+                                      Text('Current password is incorrect'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
@@ -1091,5 +1110,43 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmSignOut() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to sign out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Logout'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      await _userService.signOut();
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    }
   }
 }
