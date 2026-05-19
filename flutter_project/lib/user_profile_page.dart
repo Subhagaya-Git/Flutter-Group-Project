@@ -3,6 +3,8 @@ import 'package:flutter_project/app_settings_page.dart';
 import 'package:flutter_project/login_page.dart';
 import 'package:flutter_project/models/user_model.dart';
 import 'package:flutter_project/services/user_service.dart';
+import 'package:flutter_project/services/settings_service.dart';
+import 'main.dart';
 
 class UserProfilePage extends StatefulWidget {
   final String userEmail;
@@ -42,10 +44,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {
+          onPressed: () async {
+            final settingsService = SettingsService();
+            await settingsService.init();
+            if (!mounted) return;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AppSettingsPage()),
+              MaterialPageRoute(builder: (context) => AppSettingsPage(settingsService: settingsService)),
             );
           },
         ),

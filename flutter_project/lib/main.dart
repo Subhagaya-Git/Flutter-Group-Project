@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'registration_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'config/theme_config.dart';
+import 'services/settings_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,19 +12,66 @@ void main() async {
     anonKey: 'sb_publishable_eZsgnC2E1LKOXqaqKPal8g_YEhRknho',
   );
 
-  runApp(const MyApp());
+  // Initialize Settings Service
+  final settingsService = SettingsService();
+  await settingsService.init();
+
+  runApp(MyApp(settingsService: settingsService));
 }
 
 final supabase = Supabase.instance.client;
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  final SettingsService settingsService;
+
+  const MyApp({required this.settingsService, super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  late ThemeMode _themeMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadThemeMode();
+  }
+
+  void _loadThemeMode() {
+    final themeModeString = widget.settingsService.getThemeMode();
+    _themeMode = _stringToThemeMode(themeModeString);
+  }
+
+  ThemeMode _stringToThemeMode(String mode) {
+    switch (mode) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
+
+  void updateThemeMode(ThemeMode newThemeMode) {
+    setState(() {
+      _themeMode = newThemeMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AppleMart',
+      theme: ThemeConfig.lightTheme,
+      darkTheme: ThemeConfig.darkTheme,
+      themeMode: _themeMode,
       home: const HomePage(),
     );
   }

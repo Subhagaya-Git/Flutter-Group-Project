@@ -107,8 +107,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final buttonColor = isDark ? colorScheme.primary : colorScheme.onSurface;
+    final buttonTextColor = isDark ? colorScheme.onPrimary : Colors.white;
+    final disabledButtonColor = isDark
+        ? colorScheme.primary.withOpacity(0.5)
+        : colorScheme.onSurface.withOpacity(0.4);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
@@ -116,12 +126,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 "Create Account",
-                style: TextStyle(
+                style: theme.textTheme.headlineLarge?.copyWith(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 32),
@@ -181,27 +190,27 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: Material(
                   elevation: 8,
                   borderRadius: BorderRadius.circular(30),
-                  shadowColor: Colors.black26,
+                  shadowColor: Colors.black.withOpacity(isDark ? 0.45 : 0.2),
                   child: InkWell(
                     onTap: _isLoading ? null : _registerUser,
                     borderRadius: BorderRadius.circular(30),
                     child: Ink(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: _isLoading ? Colors.grey : Colors.black,
+                        color: _isLoading ? disabledButtonColor : buttonColor,
                       ),
                       child: Center(
                         child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
+                            ? CircularProgressIndicator(
+                                color: buttonTextColor,
                               )
-                            : const Text(
+                            : Text(
                                 'CREATE ACCOUNT',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
-                                  color: Colors.white,
+                                  color: buttonTextColor,
                                 ),
                               ),
                       ),
@@ -233,22 +242,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     child: _isLoginLoading
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 22,
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              color: Colors.black,
+                              color: colorScheme.primary,
                             ),
                           )
                         : Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: const [
+                            children: [
                               Text(
                                 'Already have an account? ',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black54,
+                                  color: theme.textTheme.bodyMedium?.color,
                                 ),
                               ),
                               Text(
@@ -256,7 +265,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: colorScheme.primary,
                                   decoration: TextDecoration.underline,
                                 ),
                               ),
@@ -278,14 +287,29 @@ class _RegistrationPageState extends State<RegistrationPage> {
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon),
+        labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        prefixIcon: Icon(icon, color: colorScheme.primary),
+        filled: true,
+        fillColor: colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.8),
         ),
       ),
     );
@@ -298,18 +322,36 @@ class _RegistrationPageState extends State<RegistrationPage> {
     required bool obscurePassword,
     required VoidCallback onToggleVisibility,
   }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return TextField(
       controller: controller,
       obscureText: obscurePassword,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon),
+        labelStyle: TextStyle(color: theme.textTheme.bodyMedium?.color),
+        prefixIcon: Icon(icon, color: colorScheme.primary),
         suffixIcon: IconButton(
-          icon: Icon(obscurePassword ? Icons.visibility_off : Icons.visibility),
+          icon: Icon(
+            obscurePassword ? Icons.visibility_off : Icons.visibility,
+            color: theme.textTheme.bodyMedium?.color,
+          ),
           onPressed: onToggleVisibility,
         ),
+        filled: true,
+        fillColor: colorScheme.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: colorScheme.primary, width: 1.8),
         ),
       ),
     );

@@ -84,8 +84,18 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final buttonColor = isDark ? colorScheme.primary : colorScheme.onSurface;
+    final buttonTextColor = isDark ? colorScheme.onPrimary : Colors.white;
+    final disabledButtonColor = isDark
+        ? colorScheme.primary.withOpacity(0.5)
+        : colorScheme.onSurface.withOpacity(0.4);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -94,21 +104,20 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 60),
-              const Text(
+              Text(
                 "Welcome Back",
-                style: TextStyle(
+                style: theme.textTheme.headlineLarge?.copyWith(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
-                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 "Sign in to continue",
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black54,
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
               const SizedBox(height: 48),
@@ -119,36 +128,36 @@ class _LoginPageState extends State<LoginPage> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   labelText: 'Email Address',
-                  labelStyle: const TextStyle(
-                    color: Colors.black54,
+                  labelStyle: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color,
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.email_outlined,
-                    color: Colors.black,
+                    color: colorScheme.primary,
                     size: 22,
                   ),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.8),
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide(
-                      color: Colors.black.withOpacity(0.1),
+                      color: colorScheme.outline.withOpacity(0.4),
                       width: 1.5,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide(
-                      color: Colors.black.withOpacity(0.1),
+                      color: colorScheme.outline.withOpacity(0.4),
                       width: 1.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
-                    borderSide: const BorderSide(
-                      color: Colors.black,
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
                       width: 2,
                     ),
                   ),
@@ -166,14 +175,14 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   labelText: 'Password',
-                  labelStyle: const TextStyle(
-                    color: Colors.black54,
+                  labelStyle: TextStyle(
+                    color: theme.textTheme.bodyMedium?.color,
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.lock_outline,
-                    color: Colors.black,
+                    color: colorScheme.primary,
                     size: 22,
                   ),
                   suffixIcon: GestureDetector(
@@ -186,30 +195,30 @@ class _LoginPageState extends State<LoginPage> {
                       _obscurePassword
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.black54,
+                      color: theme.textTheme.bodyMedium?.color,
                       size: 22,
                     ),
                   ),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.8),
+                  fillColor: colorScheme.surface,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide(
-                      color: Colors.black.withOpacity(0.1),
+                      color: colorScheme.outline.withOpacity(0.4),
                       width: 1.5,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
                     borderSide: BorderSide(
-                      color: Colors.black.withOpacity(0.1),
+                      color: colorScheme.outline.withOpacity(0.4),
                       width: 1.5,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.0),
-                    borderSide: const BorderSide(
-                      color: Colors.black,
+                    borderSide: BorderSide(
+                      color: colorScheme.primary,
                       width: 2,
                     ),
                   ),
@@ -228,27 +237,27 @@ class _LoginPageState extends State<LoginPage> {
                 child: Material(
                   elevation: 8,
                   borderRadius: BorderRadius.circular(30),
-                  shadowColor: Colors.black26,
+                  shadowColor: Colors.black.withOpacity(isDark ? 0.45 : 0.2),
                   child: InkWell(
                     onTap: _isLoading ? null : _loginUser,
                     borderRadius: BorderRadius.circular(30),
                     child: Ink(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
-                        color: _isLoading ? Colors.grey : Colors.black,
+                        color: _isLoading ? disabledButtonColor : buttonColor,
                       ),
                       child: Center(
                         child: _isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
+                            ? CircularProgressIndicator(
+                                color: buttonTextColor,
                               )
-                            : const Text(
+                            : Text(
                                 'LOGIN',
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.2,
-                                  color: Colors.white,
+                                  color: buttonTextColor,
                                 ),
                               ),
                       ),
@@ -279,12 +288,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           "Don't have an account? ",
                           style: TextStyle(
                             fontSize: 15,
-                            color: Colors.black54,
+                            color: theme.textTheme.bodyMedium?.color,
                           ),
                         ),
                         Text(
@@ -292,7 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                            color: colorScheme.primary,
                             decoration: TextDecoration.underline,
                           ),
                         ),

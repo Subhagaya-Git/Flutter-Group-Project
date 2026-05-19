@@ -5,6 +5,7 @@ import 'package:flutter_project/product_detail_page.dart';
 import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/services/product_service.dart';
 import 'package:flutter_project/services/cart_service.dart';
+import 'package:flutter_project/services/settings_service.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'favourite_page.dart';
 import 'user_profile_page.dart';
@@ -64,6 +65,8 @@ class _MainHomePageState extends State<MainHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final pages = [
       _buildHomeContent(),
       _buildShopPage(),
@@ -74,11 +77,12 @@ class _MainHomePageState extends State<MainHomePage> {
     return Scaffold(
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: colorScheme.surface,
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        selectedItemColor: colorScheme.primary,
+        unselectedItemColor: Theme.of(context).textTheme.bodyMedium?.color,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.shop), label: 'Category'),
@@ -92,24 +96,33 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget _buildHomeContent() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.black),
-          onPressed: () {
+          icon: Icon(Icons.menu, color: colorScheme.onSurface),
+          onPressed: () async {
+            final settingsService = SettingsService();
+            await settingsService.init();
+            if (!mounted) return;
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AppSettingsPage()),
+              MaterialPageRoute(
+                builder: (context) =>
+                    AppSettingsPage(settingsService: settingsService),
+              ),
             );
           },
         ),
-        title: const Text(
+        title: Text(
           'AppleMart',
           style: TextStyle(
-            color: Colors.black,
+            color: colorScheme.onSurface,
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -123,8 +136,10 @@ class _MainHomePageState extends State<MainHomePage> {
               return Stack(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart_outlined,
-                        color: Colors.black),
+                    icon: Icon(
+                      Icons.shopping_cart_outlined,
+                      color: colorScheme.onSurface,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -175,11 +190,13 @@ class _MainHomePageState extends State<MainHomePage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.black.withOpacity(
+                        theme.brightness == Brightness.dark ? 0.25 : 0.1,
+                      ),
                       spreadRadius: 1,
                       blurRadius: 5,
                     ),
@@ -190,15 +207,21 @@ class _MainHomePageState extends State<MainHomePage> {
                     Expanded(
                       child: TextField(
                         controller: _searchController,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Search products...',
+                          hintStyle: TextStyle(
+                            color: theme.textTheme.bodyMedium?.color,
+                          ),
                           border: InputBorder.none,
                         ),
                         onChanged: _performSearch,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.search, color: Colors.grey),
+                      icon: Icon(
+                        Icons.search,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
                       onPressed: () => _performSearch(_searchController.text),
                     ),
                   ],
@@ -428,6 +451,7 @@ class _MainHomePageState extends State<MainHomePage> {
 
   Widget _buildCategoryButton(String category) {
     final isSelected = _selectedCategory == category;
+    final colorScheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -438,8 +462,9 @@ class _MainHomePageState extends State<MainHomePage> {
             });
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: isSelected ? Colors.blue : Colors.white,
-            foregroundColor: isSelected ? Colors.white : Colors.black,
+            backgroundColor: isSelected ? colorScheme.primary : colorScheme.surface,
+            foregroundColor:
+                isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
             elevation: isSelected ? 4 : 1,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -452,17 +477,23 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget _buildSearchResults() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     if (_searchResults.isEmpty) {
       return Padding(
         padding: const EdgeInsets.all(32.0),
         child: Center(
           child: Column(
             children: [
-              Icon(Icons.search_off, size: 64, color: Colors.grey[400]),
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: Theme.of(context).textTheme.bodyMedium?.color,
+              ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'No items found',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
+                style: TextStyle(fontSize: 18, color: colorScheme.onBackground),
               ),
             ],
           ),
@@ -561,6 +592,8 @@ class _MainHomePageState extends State<MainHomePage> {
   }
 
   Widget _buildProductCard(Product product, {String category = 'New'}) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -585,7 +618,7 @@ class _MainHomePageState extends State<MainHomePage> {
                   Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ClipRRect(
@@ -602,7 +635,7 @@ class _MainHomePageState extends State<MainHomePage> {
                                   height: 30,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.blue,
+                                    color: colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -700,8 +733,11 @@ class _MainHomePageState extends State<MainHomePage> {
                 children: [
                   Text(
                     product.name,
-                    style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: colorScheme.onSurface,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -712,7 +748,7 @@ class _MainHomePageState extends State<MainHomePage> {
                       '\$${product.price.toStringAsFixed(2)}',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         decoration: TextDecoration.lineThrough,
                       ),
                     ),
@@ -726,8 +762,11 @@ class _MainHomePageState extends State<MainHomePage> {
                   ] else
                     Text(
                       '\$${product.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                 ],
               ),
