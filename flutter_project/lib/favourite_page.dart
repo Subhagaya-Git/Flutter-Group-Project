@@ -6,6 +6,9 @@ import 'package:flutter_project/models/product.dart';
 import 'package:flutter_project/cart_page.dart';
 import 'package:flutter_project/product_detail_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_project/services/currency_service.dart';
 
 class FavouritePage extends StatefulWidget {
   final String userEmail;
@@ -27,13 +30,13 @@ class _FavouritePageState extends State<FavouritePage> {
       String productId, String productName) async {
     try {
       await _favouriteService.removeFavourite(widget.userEmail, productId);
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$productName removed from favourites'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+            content: Text('$productName removed', style: GoogleFonts.inter()),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       }
@@ -41,9 +44,10 @@ class _FavouritePageState extends State<FavouritePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to remove: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
+            content: Text('Failed to remove: $e', style: GoogleFonts.inter()),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       }
@@ -51,25 +55,30 @@ class _FavouritePageState extends State<FavouritePage> {
   }
 
   void _showDeleteConfirmation(String productId, String productName) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove from Favourites'),
-        content: Text('Remove $productName from your favourites?'),
+        backgroundColor: colorScheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Remove Favourite', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold)),
+        content: Text('Remove $productName from your list?', style: GoogleFonts.inter()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('Cancel', style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6))),
           ),
-          TextButton(
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.error,
+              foregroundColor: colorScheme.onError,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
             onPressed: () {
               Navigator.pop(context);
               _removeFromFavourites(productId, productName);
             },
-            child: const Text(
-              'Remove',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Remove'),
           ),
         ],
       ),
@@ -78,13 +87,17 @@ class _FavouritePageState extends State<FavouritePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back_ios_new, color: colorScheme.onBackground, size: 20),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -94,35 +107,30 @@ class _FavouritePageState extends State<FavouritePage> {
             );
           },
         ),
-        title: const Text(
-          'My Favourites',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
+        title: Text(
+          'Favorites',
+          style: GoogleFonts.montserrat(
+            color: colorScheme.onBackground,
+            fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
-        automaticallyImplyLeading: false,
         actions: [
           StreamBuilder<int>(
             stream: _cartService.getCartCount(widget.userEmail),
             builder: (context, snapshot) {
               final count = snapshot.data ?? 0;
               return Stack(
+                alignment: Alignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(
-                      Icons.shopping_cart_outlined,
-                      color: Colors.black,
-                    ),
+                    icon: Icon(Icons.shopping_bag_outlined, color: colorScheme.onBackground),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CartPage(
-                            userEmail: widget.userEmail,
-                          ),
+                          builder: (context) => CartPage(userEmail: widget.userEmail),
                         ),
                       );
                     },
@@ -132,26 +140,20 @@ class _FavouritePageState extends State<FavouritePage> {
                       right: 8,
                       top: 8,
                       child: Container(
-                        padding: const EdgeInsets.all(2),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(10),
+                          color: colorScheme.primary,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: colorScheme.background, width: 2),
                         ),
-                        constraints: const BoxConstraints(
-                          minWidth: 18,
-                          minHeight: 18,
-                        ),
+                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                         child: Text(
                           '$count',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
+                    ).animate().scale(),
                 ],
               );
             },
@@ -171,18 +173,9 @@ class _FavouritePageState extends State<FavouritePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 60, color: Colors.red[300]),
+                  Icon(Icons.error_outline, size: 60, color: colorScheme.error),
                   const SizedBox(height: 16),
-                  Text(
-                    'Error loading favourites',
-                    style: TextStyle(fontSize: 18, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString(),
-                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-                    textAlign: TextAlign.center,
-                  ),
+                  Text('Failed to load favorites', style: GoogleFonts.montserrat(fontSize: 18, color: colorScheme.onBackground)),
                 ],
               ),
             );
@@ -197,42 +190,49 @@ class _FavouritePageState extends State<FavouritePage> {
                 children: [
                   Icon(
                     Icons.favorite_border,
-                    size: 100,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 16),
+                    size: 120,
+                    color: colorScheme.onBackground.withOpacity(0.1),
+                  ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                  const SizedBox(height: 24),
                   Text(
-                    'No favourites yet',
-                    style: TextStyle(
+                    'No favorites yet',
+                    style: GoogleFonts.montserrat(
                       fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[600],
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onBackground,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 200.ms),
                   const SizedBox(height: 8),
                   Text(
-                    'Start adding items you love',
-                    style: TextStyle(
+                    'Save items you love here',
+                    style: GoogleFonts.inter(
                       fontSize: 14,
-                      color: Colors.grey[500],
+                      color: colorScheme.onBackground.withOpacity(0.5),
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 400.ms),
                 ],
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             itemCount: favourites.length,
             itemBuilder: (context, index) {
               final product = favourites[index];
 
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
                 child: InkWell(
                   onTap: () {
@@ -246,164 +246,106 @@ class _FavouritePageState extends State<FavouritePage> {
                       ),
                     );
                   },
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(24),
                   child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       children: [
-                        // Product Image
-                        Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: product.images.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: product.images[0],
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(
-                                      child: SizedBox(
-                                        width: 30,
-                                        height: 30,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.blue,
-                                        ),
+                        Hero(
+                          tag: 'product_${product.id}',
+                          child: Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              color: colorScheme.background,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: product.images.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: product.images[0],
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Center(
+                                        child: CircularProgressIndicator(strokeWidth: 2, color: colorScheme.primary),
                                       ),
-                                    ),
-                                    errorWidget: (context, url, error) {
-                                      print('Favourite image error: $error');
-                                      return Center(
-                                        child: Icon(
-                                          Icons.broken_image,
-                                          size: 50,
-                                          color: Colors.grey[400],
-                                        ),
-                                      );
-                                    },
-                                  )
-                                : Center(
-                                    child: Icon(
-                                      Icons.image,
-                                      size: 50,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
+                                    )
+                                  : Icon(Icons.image, color: colorScheme.onSurface.withOpacity(0.2)),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 16),
-
-                        // Product Details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 product.brand,
-                                style: TextStyle(
+                                style: GoogleFonts.inter(
                                   fontSize: 12,
-                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                  letterSpacing: 1,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 product.name,
-                                style: const TextStyle(
+                                style: GoogleFonts.montserrat(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
                                 ),
-                                maxLines: 2,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  const Icon(
-                                    Icons.star,
-                                    color: Colors.orange,
-                                    size: 16,
-                                  ),
+                                  Icon(Icons.star_rounded, color: Colors.amber, size: 18),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${product.rating}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.bold, color: colorScheme.onSurface),
                                   ),
-                                  const SizedBox(width: 8),
+                                  const SizedBox(width: 4),
                                   Text(
                                     '(${product.reviewCount})',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
+                                    style: GoogleFonts.inter(fontSize: 12, color: colorScheme.onSurface.withOpacity(0.5)),
                                   ),
                                 ],
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '\$${product.price.toStringAsFixed(2)}',
-                                style: const TextStyle(
+                                CurrencyService.formatPrice(context, product.price),
+                                style: GoogleFonts.montserrat(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.green,
+                                  color: colorScheme.onSurface,
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  Icon(
-                                    product.inStock
-                                        ? Icons.check_circle
-                                        : Icons.cancel,
-                                    color: product.inStock
-                                        ? Colors.green
-                                        : Colors.red,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    product.inStock
-                                        ? 'In Stock'
-                                        : 'Out of Stock',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: product.inStock
-                                          ? Colors.green
-                                          : Colors.red,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
                               ),
                             ],
                           ),
                         ),
-
-                        // Delete Button
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                            size: 28,
-                          ),
-                          onPressed: () => _showDeleteConfirmation(
-                            product.id,
-                            product.name,
-                          ),
+                        Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.favorite, color: Colors.redAccent),
+                              onPressed: () => _showDeleteConfirmation(product.id, product.name),
+                            ),
+                            const SizedBox(height: 20),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 14,
+                              color: colorScheme.onSurface.withOpacity(0.2),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
                 ),
-              );
+              ).animate().fadeIn(delay: (index * 100).ms).slideX(begin: 0.1, curve: Curves.easeOut);
             },
           );
         },

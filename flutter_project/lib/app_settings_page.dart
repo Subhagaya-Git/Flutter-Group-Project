@@ -119,6 +119,11 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
       _currencyCode = newCurrency;
     });
     await widget.settingsService.setCurrencyCode(newCurrency);
+    
+    if (mounted) {
+      MyApp.of(context)?.updateCurrencyCode(newCurrency);
+    }
+    
     _showSettingUpdatedSnackBar('Currency changed to $newCurrency');
   }
 
@@ -278,9 +283,10 @@ class _AppSettingsPageState extends State<AppSettingsPage> {
                   trailing: DropdownButton<String>(
                     value: _currencyCode,
                     items: const [
-                      DropdownMenuItem(value: 'USD', child: Text('USD')),
-                      DropdownMenuItem(value: 'EUR', child: Text('EUR')),
-                      DropdownMenuItem(value: 'GBP', child: Text('GBP')),
+                      DropdownMenuItem(value: 'USD', child: Text('USD (\$)')),
+                      DropdownMenuItem(value: 'LKR', child: Text('LKR (Rs)')),
+                      DropdownMenuItem(value: 'EUR', child: Text('EUR (€)')),
+                      DropdownMenuItem(value: 'GBP', child: Text('GBP (£)')),
                     ],
                     onChanged: (value) {
                       if (value != null) {

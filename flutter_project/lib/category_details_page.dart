@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_project/cart_page.dart';
 import 'package:flutter_project/services/cart_service.dart';
 import 'services/product_service.dart';
 import 'product_detail_page.dart';
 import 'models/product.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_project/services/currency_service.dart';
 
 class CategoryDetailsPage extends StatefulWidget {
   final String category;
@@ -40,24 +42,17 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          widget.category,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: Text(widget.category),
         actions: [
           StreamBuilder<int>(
             stream: CartService().getCartCount(widget.userEmail),
@@ -67,7 +62,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart, color: Colors.black),
+                    icon: Icon(Icons.shopping_cart, color: colorScheme.onSurface),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -117,7 +112,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                     'No products found in this category',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: colorScheme.onSurface.withOpacity(0.6),
                     ),
                   ),
                 )
@@ -126,13 +121,16 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                   itemCount: _products.length,
                   itemBuilder: (context, index) {
                     final product = _products[index];
-                    return _buildProductCard(product);
+                    return _buildProductCard(product, index);
                   },
                 ),
     );
   }
 
-  Widget _buildProductCard(Map<String, dynamic> product) {
+  Widget _buildProductCard(Map<String, dynamic> product, int index) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () {
         try {
@@ -162,11 +160,11 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -181,7 +179,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: isDark ? theme.colorScheme.background : Colors.grey[100],
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ClipRRect(
@@ -218,10 +216,10 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                   children: [
                     Text(
                       product['name'] ?? '',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: theme.colorScheme.onSurface,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -231,7 +229,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                       product['brand'] ?? '',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -243,7 +241,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                           '${product['rating'] ?? 0} (${product['review_count'] ?? 0})',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
                         ),
                       ],
@@ -252,11 +250,11 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                     Row(
                       children: [
                         Text(
-                          '\$${product['price']}',
-                          style: const TextStyle(
+                          CurrencyService.formatPrice(context, (product['price'] as num).toDouble()),
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -288,6 +286,6 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
           ),
         ),
       ),
-    );
+    ).animate().fadeIn(delay: (index * 50).ms, duration: 400.ms).slideX(begin: 0.2, curve: Curves.easeOutQuad);
   }
 }

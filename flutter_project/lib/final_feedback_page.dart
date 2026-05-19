@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/main_home_page.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_project/services/currency_service.dart';
 
 class FinalFeedbackPage extends StatefulWidget {
   final String userEmail;
@@ -82,24 +84,17 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Order Confirmation',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('Order Confirmation'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -113,34 +108,34 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.green[100],
+                      color: Colors.green.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(50),
                     ),
                     child: Center(
                       child: Icon(
                         Icons.check_circle,
                         size: 50,
-                        color: Colors.green[700],
+                        color: Colors.green,
                       ),
                     ),
-                  ),
+                  ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Order Placed Successfully!',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: colorScheme.onSurface,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.5),
                   const SizedBox(height: 8),
                   Text(
                     'Thank you for your purchase',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: colorScheme.onSurface.withOpacity(0.6),
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 600.ms),
                 ],
               ),
             ),
@@ -149,6 +144,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Card(
+                color: colorScheme.surface,
                 elevation: 2,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -158,11 +154,12 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Order Details',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -183,23 +180,27 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                               : widget.paymentMethod == 'wallet'
                                   ? 'Digital Wallet'
                                   : 'Bank Transfer'),
-                      const Divider(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(color: colorScheme.onSurface.withOpacity(0.1)),
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Total Amount',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
                             ),
                           ),
                           Text(
-                            '\$${widget.total.toStringAsFixed(2)}',
-                            style: const TextStyle(
+                            CurrencyService.formatPrice(context, widget.total),
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ],
@@ -208,7 +209,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                   ),
                 ),
               ),
-            ),
+            ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.2),
 
             const SizedBox(height: 30),
 
@@ -218,11 +219,12 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Share Your Feedback',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -231,11 +233,12 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Rate Your Experience',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -255,7 +258,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                                   size: 32,
                                   color: index < _rating
                                       ? Colors.amber
-                                      : Colors.grey[300],
+                                      : colorScheme.onSurface.withOpacity(0.1),
                                 ),
                               ),
                             );
@@ -271,34 +274,35 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Your Feedback',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(height: 8),
                       TextField(
                         controller: _feedbackController,
                         maxLines: 5,
+                        style: TextStyle(color: colorScheme.onSurface),
                         decoration: InputDecoration(
                           hintText: 'Tell us about your shopping experience...',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.3)),
+                          filled: true,
+                          fillColor: colorScheme.surface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.1)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                            borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.1)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(
-                              color: Colors.black,
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: colorScheme.primary, width: 2),
                           ),
                           contentPadding: const EdgeInsets.all(12),
                         ),
@@ -314,7 +318,8 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                     child: ElevatedButton(
                       onPressed: _submitFeedback,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         elevation: 8,
                         shape: RoundedRectangleBorder(
@@ -326,7 +331,6 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -341,15 +345,15 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                       onPressed: _continueShopping,
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Colors.black, width: 1.5),
+                        side: BorderSide(color: colorScheme.onSurface, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Continue Shopping',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: colorScheme.onSurface,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -360,7 +364,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
                   const SizedBox(height: 30),
                 ],
               ),
-            ),
+            ).animate().fadeIn(delay: 1000.ms),
           ],
         ),
       ),
@@ -368,6 +372,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
   }
 
   Widget _buildDetailRow(String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -375,7 +380,7 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[600],
+            color: colorScheme.onSurface.withOpacity(0.6),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -383,10 +388,10 @@ class _FinalFeedbackPageState extends State<FinalFeedbackPage> {
           child: Text(
             value,
             textAlign: TextAlign.end,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black,
+              color: colorScheme.onSurface,
             ),
             overflow: TextOverflow.ellipsis,
           ),

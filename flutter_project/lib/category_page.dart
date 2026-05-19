@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/cart_page.dart';
 import 'package:flutter_project/main_home_page.dart';
 import 'package:flutter_project/services/cart_service.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'services/product_service.dart';
 import 'category_details_page.dart';
 
@@ -70,13 +71,14 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () {
             Navigator.pushReplacement(
               context,
@@ -86,15 +88,7 @@ class _CategoryPageState extends State<CategoryPage> {
             );
           },
         ),
-        title: const Text(
-          'Categories',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('Categories'),
         actions: [
           StreamBuilder<int>(
             stream: CartService().getCartCount(widget.userEmail),
@@ -104,7 +98,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart, color: Colors.black),
+                    icon: Icon(Icons.shopping_cart, color: theme.colorScheme.onSurface),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -150,17 +144,17 @@ class _CategoryPageState extends State<CategoryPage> {
         children: [
           // Search Bar
           Container(
-            color: Colors.white,
+            color: theme.appBarTheme.backgroundColor,
             padding: const EdgeInsets.all(16),
             child: TextField(
               controller: _searchController,
               onChanged: _filterCategories,
               decoration: InputDecoration(
                 hintText: 'Search Your Product',
-                hintStyle: TextStyle(color: Colors.grey[400]),
-                prefixIcon: Icon(Icons.search, color: Colors.grey[400]),
+                hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4)),
+                prefixIcon: Icon(Icons.search, color: theme.colorScheme.onSurface.withOpacity(0.4)),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: isDark ? theme.colorScheme.surface : Colors.grey[100],
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -168,7 +162,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
-          ),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
 
           // Categories Grid
           Expanded(
@@ -180,7 +174,7 @@ class _CategoryPageState extends State<CategoryPage> {
                           'No categories found',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
                         ),
                       )
@@ -196,7 +190,7 @@ class _CategoryPageState extends State<CategoryPage> {
                         itemCount: _filteredCategories.length,
                         itemBuilder: (context, index) {
                           final category = _filteredCategories[index];
-                          return _buildCategoryCard(category);
+                          return _buildCategoryCard(category, index);
                         },
                       ),
           ),
@@ -205,7 +199,10 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  Widget _buildCategoryCard(String category) {
+  Widget _buildCategoryCard(String category, int index) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -220,11 +217,11 @@ class _CategoryPageState extends State<CategoryPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardTheme.color,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -237,13 +234,13 @@ class _CategoryPageState extends State<CategoryPage> {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: isDark ? theme.colorScheme.background : Colors.grey[100],
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 _categoryIcons[category] ?? Icons.category,
                 size: 40,
-                color: Colors.blue[700],
+                color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 12),
@@ -252,16 +249,16 @@ class _CategoryPageState extends State<CategoryPage> {
               child: Text(
                 category,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(delay: (index * 50).ms, duration: 400.ms).scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack);
   }
 }

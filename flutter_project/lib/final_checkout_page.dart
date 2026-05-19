@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/services/cart_service.dart';
 import 'package:flutter_project/final_feedback_page.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_project/services/currency_service.dart';
 
 class FinalCheckoutPage extends StatefulWidget {
   final String userEmail;
@@ -202,24 +204,17 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Checkout',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('Checkout'),
       ),
       body: Column(
         children: [
@@ -233,7 +228,7 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                   child: Container(
                     height: 2,
                     margin: const EdgeInsets.symmetric(horizontal: 8),
-                    color: _currentStep >= 1 ? Colors.black : Colors.grey[300],
+                    color: _currentStep >= 1 ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.1),
                   ),
                 ),
                 _buildStepIndicator(1, 'Shipping', _currentStep >= 1),
@@ -241,13 +236,13 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                   child: Container(
                     height: 2,
                     margin: const EdgeInsets.symmetric(horizontal: 8),
-                    color: _currentStep >= 2 ? Colors.black : Colors.grey[300],
+                    color: _currentStep >= 2 ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.1),
                   ),
                 ),
                 _buildStepIndicator(2, 'Payment', _currentStep >= 2),
               ],
             ),
-          ),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
           const Divider(height: 1),
 
           // Page Content
@@ -284,15 +279,15 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                       onPressed: _previousStep,
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        side: const BorderSide(color: Colors.black, width: 1.5),
+                        side: BorderSide(color: colorScheme.onSurface, width: 1.5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Back',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: colorScheme.onSurface,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -304,7 +299,8 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                   child: ElevatedButton(
                     onPressed: _currentStep < 2 ? _nextStep : _completeOrder,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 8,
                       shape: RoundedRectangleBorder(
@@ -316,34 +312,34 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
+          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
         ],
       ),
     );
   }
 
   Widget _buildStepIndicator(int step, String label, bool isActive) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: isActive ? Colors.black : Colors.grey[200],
+            color: isActive ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.05),
             borderRadius: BorderRadius.circular(50),
           ),
           child: Center(
             child: Text(
               '${step + 1}',
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.grey[600],
+                color: isActive ? colorScheme.onPrimary : colorScheme.onSurface.withOpacity(0.3),
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -356,7 +352,7 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: isActive ? Colors.black : Colors.grey[500],
+            color: isActive ? colorScheme.onSurface : colorScheme.onSurface.withOpacity(0.3),
           ),
         ),
       ],
@@ -364,24 +360,31 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
   }
 
   Widget _buildOrderReviewStep() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Order Summary',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16),
 
           // Cart Items
-          ...widget.cartItems.map((item) {
+          ...widget.cartItems.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
+              color: colorScheme.surface,
               elevation: 1,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -394,14 +397,14 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                       width: 70,
                       height: 70,
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
+                        color: colorScheme.background,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Center(
                         child: Icon(
-                          Icons.headphones,
+                          Icons.shopping_bag,
                           size: 35,
-                          color: Colors.grey[400],
+                          color: colorScheme.onSurface.withOpacity(0.2),
                         ),
                       ),
                     ),
@@ -412,35 +415,37 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                         children: [
                           Text(
                             item.product.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '\$${item.product.price.toStringAsFixed(2)} x ${item.quantity}',
+                            '${CurrencyService.formatPrice(context, item.product.price)} x ${item.quantity}',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                         ],
                       ),
                     ),
                     Text(
-                      '\$${(item.product.price * item.quantity).toStringAsFixed(2)}',
-                      style: const TextStyle(
+                      CurrencyService.formatPrice(context, item.product.price * item.quantity),
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                   ],
                 ),
               ),
-            );
+            ).animate().fadeIn(delay: (index * 50).ms).slideX(begin: 0.1);
           }),
 
           const SizedBox(height: 20),
@@ -449,9 +454,9 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
             ),
             child: Column(
               children: [
@@ -460,48 +465,54 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                 _buildPriceSummaryRow('Shipping', widget.shipping),
                 const SizedBox(height: 10),
                 _buildPriceSummaryRow('Tax', widget.tax),
-                const Divider(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: colorScheme.onSurface.withOpacity(0.1)),
+                ),
                 _buildPriceSummaryRow('Total', widget.total, isTotal: true),
               ],
             ),
-          ),
+          ).animate().fadeIn(delay: 300.ms),
         ],
       ),
     );
   }
 
   Widget _buildShippingStep() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Shipping Information',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 20),
-          _buildTextField('Full Name', _fullNameController, 'John Doe'),
+          _buildTextField('Full Name', _fullNameController, 'Enter your name'),
           const SizedBox(height: 16),
           _buildTextField('Email', _emailController, widget.userEmail,
               readOnly: true),
           const SizedBox(height: 16),
-          _buildTextField('Phone Number', _phoneController, '+1 (555) 000-00'),
+          _buildTextField('Phone Number', _phoneController, '07X XXX XXXX'),
           const SizedBox(height: 16),
           _buildTextField(
-              'Street Address', _addressController, '123 Main Street'),
+              'Street Address', _addressController, 'Enter street address'),
           const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
-                child: _buildTextField('City', _cityController, 'New York'),
+                child: _buildTextField('City', _cityController, 'City'),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildTextField('ZIP Code', _zipController, '10001'),
+                child: _buildTextField('ZIP Code', _zipController, 'ZIP'),
               ),
             ],
           ),
@@ -509,20 +520,20 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: Colors.blue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.blue[200]!),
+              border: Border.all(color: Colors.blue.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                Icon(Icons.info, color: Colors.blue[700], size: 20),
+                const Icon(Icons.info, color: Colors.blue, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Please ensure your address is correct for timely delivery',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.blue[700],
+                      color: Colors.blue.withOpacity(0.8),
                     ),
                   ),
                 ),
@@ -531,20 +542,23 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms);
   }
 
   Widget _buildPaymentStep() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Payment Method',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 20),
@@ -579,7 +593,7 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                 'Card Holder Name', _cardHolderController, 'John Doe'),
             const SizedBox(height: 16),
             _buildTextField(
-                'Card Number', _cardNumberController, '1234 5678 9012 3456'),
+                'Card Number', _cardNumberController, 'XXXX XXXX XXXX XXXX'),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -589,7 +603,7 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _buildTextField('CVV', _cvvController, '123'),
+                  child: _buildTextField('CVV', _cvvController, 'XXX'),
                 ),
               ],
             ),
@@ -601,9 +615,9 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey[200]!),
+              border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
             ),
             child: Column(
               children: [
@@ -612,7 +626,10 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                 _buildPriceSummaryRow('Shipping', widget.shipping),
                 const SizedBox(height: 10),
                 _buildPriceSummaryRow('Tax', widget.tax),
-                const Divider(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: colorScheme.onSurface.withOpacity(0.1)),
+                ),
                 _buildPriceSummaryRow('Total', widget.total, isTotal: true),
               ],
             ),
@@ -624,20 +641,20 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green[50],
+              color: Colors.green.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.green[200]!),
+              border: Border.all(color: Colors.green.withOpacity(0.2)),
             ),
             child: Row(
               children: [
-                Icon(Icons.check_circle, color: Colors.green[700], size: 20),
+                const Icon(Icons.check_circle, color: Colors.green, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'I agree to the terms and conditions',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.green[700],
+                      color: Colors.green.withOpacity(0.8),
                     ),
                   ),
                 ),
@@ -646,10 +663,13 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           ),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms);
   }
 
   Widget _buildPaymentOption(String value, String label, IconData icon) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final isSelected = _selectedPaymentMethod == value;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -660,24 +680,18 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: _selectedPaymentMethod == value
-                ? Colors.black
-                : Colors.grey[300]!,
-            width: _selectedPaymentMethod == value ? 2 : 1,
+            color: isSelected ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.1),
+            width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: _selectedPaymentMethod == value
-              ? Colors.black.withOpacity(0.05)
-              : Colors.white,
+          color: isSelected ? colorScheme.primary.withOpacity(0.05) : colorScheme.surface,
         ),
         child: Row(
           children: [
             Icon(
               icon,
               size: 28,
-              color: _selectedPaymentMethod == value
-                  ? Colors.black
-                  : Colors.grey[400],
+              color: isSelected ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.3),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -686,9 +700,7 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: _selectedPaymentMethod == value
-                      ? Colors.black
-                      : Colors.grey[600],
+                  color: isSelected ? colorScheme.onSurface : colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ),
@@ -698,15 +710,14 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: _selectedPaymentMethod == value
-                      ? Colors.black
-                      : Colors.grey[300]!,
+                  color: isSelected ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.1),
                   width: 2,
                 ),
-                color: _selectedPaymentMethod == value
-                    ? Colors.black
-                    : Colors.white,
+                color: isSelected ? colorScheme.primary : Colors.transparent,
               ),
+              child: isSelected
+                  ? const Icon(Icons.check, size: 12, color: Colors.white)
+                  : null,
             ),
           ],
         ),
@@ -717,40 +728,43 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
   Widget _buildTextField(
       String label, TextEditingController controller, String hint,
       {bool readOnly = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           readOnly: readOnly,
+          style: TextStyle(color: colorScheme.onSurface),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey[400]),
+            hintStyle: TextStyle(color: colorScheme.onSurface.withOpacity(0.3)),
+            filled: true,
+            fillColor: readOnly ? colorScheme.onSurface.withOpacity(0.05) : colorScheme.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.1)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: colorScheme.onSurface.withOpacity(0.1)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Colors.black, width: 2),
+              borderSide: BorderSide(color: colorScheme.primary, width: 2),
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            filled: readOnly,
-            fillColor: readOnly ? Colors.grey[100] : Colors.white,
           ),
         ),
       ],
@@ -759,6 +773,8 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
 
   Widget _buildPriceSummaryRow(String label, double amount,
       {bool isTotal = false}) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -767,15 +783,15 @@ class _FinalCheckoutPageState extends State<FinalCheckoutPage> {
           style: TextStyle(
             fontSize: isTotal ? 16 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: Colors.black,
+            color: colorScheme.onSurface,
           ),
         ),
         Text(
-          '\$${amount.toStringAsFixed(2)}',
+          CurrencyService.formatPrice(context, amount),
           style: TextStyle(
             fontSize: isTotal ? 18 : 14,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
-            color: isTotal ? Colors.green : Colors.black,
+            color: isTotal ? colorScheme.primary : colorScheme.onSurface,
           ),
         ),
       ],

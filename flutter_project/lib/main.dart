@@ -3,6 +3,8 @@ import 'registration_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/theme_config.dart';
 import 'services/settings_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,16 +37,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late ThemeMode _themeMode;
+  late String _currencyCode;
 
   @override
   void initState() {
     super.initState();
-    _loadThemeMode();
+    _loadSettings();
   }
 
-  void _loadThemeMode() {
+  void _loadSettings() {
     final themeModeString = widget.settingsService.getThemeMode();
     _themeMode = _stringToThemeMode(themeModeString);
+    _currencyCode = widget.settingsService.getCurrencyCode();
   }
 
   ThemeMode _stringToThemeMode(String mode) {
@@ -64,6 +68,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void updateCurrencyCode(String newCurrencyCode) {
+    setState(() {
+      _currencyCode = newCurrencyCode;
+    });
+  }
+
+  String get currencyCode => _currencyCode;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -72,34 +84,46 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeConfig.lightTheme,
       darkTheme: ThemeConfig.darkTheme,
       themeMode: _themeMode,
-      home: const HomePage(),
+      home: const HomePage(title: 'AppleMart'),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, required this.title});
+
+  final String title;
 
   @override
-  State<HomePage> createState() => HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFFFFFF),
-              Color(0xFFF2F2F7),
-              Color(0xFFE5ECF4),
-            ],
+            colors: isDark
+                ? [
+                    colorScheme.surface,
+                    colorScheme.background,
+                    const Color(0xFF000000),
+                  ]
+                : [
+                    const Color(0xFFFFFFFF),
+                    const Color(0xFFF2F2F7),
+                    const Color(0xFFE5ECF4),
+                  ],
           ),
         ),
         child: Column(
@@ -110,77 +134,84 @@ class HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(22),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.black,
+                color: isDark ? colorScheme.primary : Colors.black,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 15,
-                    offset: Offset(0, 8),
+                    color: isDark
+                        ? colorScheme.primary.withOpacity(0.3)
+                        : Colors.black12,
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.apple,
                 size: 64,
-                color: Colors.white,
+                color: isDark ? colorScheme.onPrimary : Colors.white,
               ),
-            ),
+            ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(0.5, 0.5), curve: Curves.easeOutBack),
 
             const SizedBox(height: 28),
 
             // App name
-            const Text(
+            Text(
               "AppleMart",
-              style: TextStyle(
-                fontSize: 38,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 1.3,
-                color: Colors.black,
+              style: GoogleFonts.montserrat(
+                fontSize: 42,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+                color: colorScheme.onBackground,
               ),
-            ),
+            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2),
 
             const SizedBox(height: 10),
 
             // Tagline
-            const Text(
+            Text(
               "Premium Apple Products Only",
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: 16,
-                color: Colors.black54,
+                color: colorScheme.onBackground.withOpacity(0.7),
+                letterSpacing: 0.5,
               ),
-            ),
+            ).animate().fadeIn(delay: 400.ms),
 
-            const SizedBox(height: 55),
+            const SizedBox(height: 60),
 
-           
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const RegistrationPage(),
+                  PageRouteBuilder(
+                    pageBuilder: (context, anim, second) => const RegistrationPage(),
+                    transitionsBuilder: (context, anim, second, child) {
+                      return FadeTransition(opacity: anim, child: child);
+                    },
                   ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
-                foregroundColor: Colors.white,
-                elevation: 10, // visible elevation
-                shadowColor: Colors.black54,
-                minimumSize: const Size(240, 56),
+                backgroundColor: isDark ? colorScheme.primary : Colors.black,
+                foregroundColor: isDark ? colorScheme.onPrimary : Colors.white,
+                elevation: 12,
+                shadowColor: isDark
+                    ? colorScheme.primary.withOpacity(0.4)
+                    : Colors.black45,
+                minimumSize: const Size(260, 64),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(32),
                 ),
               ),
-              child: const Text(
-                "START SHOPPING",
-                style: TextStyle(
-                  fontSize: 16,
+              child: Text(
+                'Start Shopping',
+                style: GoogleFonts.inter(
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 1.4,
+                  letterSpacing: 1.0,
                 ),
               ),
-            ),
+            ).animate().fadeIn(delay: 600.ms).scale(begin: const Offset(0.9, 0.9)),
           ],
         ),
       ),

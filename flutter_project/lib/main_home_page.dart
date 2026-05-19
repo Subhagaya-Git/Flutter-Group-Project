@@ -11,6 +11,8 @@ import 'favourite_page.dart';
 import 'user_profile_page.dart';
 import 'cart_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_project/services/currency_service.dart';
 
 class MainHomePage extends StatefulWidget {
   final String userEmail;
@@ -174,7 +176,7 @@ class _MainHomePageState extends State<MainHomePage> {
                           textAlign: TextAlign.center,
                         ),
                       ),
-                    ),
+                    ).animate().scale(),
                 ],
               );
             },
@@ -226,10 +228,10 @@ class _MainHomePageState extends State<MainHomePage> {
                     ),
                   ],
                 ),
-              ),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2),
             ),
-            if (!_isSearching) _buildCarousel(),
-            if (!_isSearching) _buildCategoryButtons(),
+            if (!_isSearching) _buildCarousel().animate().fadeIn(delay: 200.ms),
+            if (!_isSearching) _buildCategoryButtons().animate().fadeIn(delay: 400.ms),
             _isSearching ? _buildSearchResults() : _buildCategoryProducts(),
           ],
         ),
@@ -253,9 +255,6 @@ class _MainHomePageState extends State<MainHomePage> {
           child: Swiper(
             itemBuilder: (BuildContext context, int index) {
               final product = products[index];
-              print('Carousel product $index: ${product.name}');
-              print(
-                  'Carousel image URL: ${product.images.isNotEmpty ? product.images[0] : "No image"}');
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -275,7 +274,6 @@ class _MainHomePageState extends State<MainHomePage> {
                   ),
                   child: Stack(
                     children: [
-                      // Background Product Image
                       if (product.images.isNotEmpty)
                         ClipRRect(
                           borderRadius: BorderRadius.circular(20),
@@ -291,12 +289,6 @@ class _MainHomePageState extends State<MainHomePage> {
                               ),
                             ),
                             errorWidget: (context, url, error) {
-                              print('============================');
-                              print('Carousel Image Error:');
-                              print('Product: ${product.name}');
-                              print('URL: $url');
-                              print('Error: $error');
-                              print('============================');
                               return Container(
                                 color: Colors.grey[200],
                                 child: Column(
@@ -321,7 +313,6 @@ class _MainHomePageState extends State<MainHomePage> {
                           ),
                         )
                       else
-                        // Fallback for products with no images
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
@@ -335,7 +326,6 @@ class _MainHomePageState extends State<MainHomePage> {
                             ),
                           ),
                         ),
-                      // Dark Overlay
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
@@ -349,7 +339,6 @@ class _MainHomePageState extends State<MainHomePage> {
                           ),
                         ),
                       ),
-                      // Text Content
                       Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Column(
@@ -399,7 +388,7 @@ class _MainHomePageState extends State<MainHomePage> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      '\$${product.price.toStringAsFixed(2)}',
+                                      CurrencyService.formatPrice(context, product.price),
                                       style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
@@ -514,7 +503,7 @@ class _MainHomePageState extends State<MainHomePage> {
         ),
         itemCount: _searchResults.length,
         itemBuilder: (context, index) {
-          return _buildProductCard(_searchResults[index]);
+          return _buildProductCard(_searchResults[index], index);
         },
       ),
     );
@@ -582,6 +571,7 @@ class _MainHomePageState extends State<MainHomePage> {
             itemBuilder: (context, index) {
               return _buildProductCard(
                 products[index],
+                index,
                 category: _selectedCategory,
               );
             },
@@ -591,7 +581,7 @@ class _MainHomePageState extends State<MainHomePage> {
     );
   }
 
-  Widget _buildProductCard(Product product, {String category = 'New'}) {
+  Widget _buildProductCard(Product product, int index, {String category = 'New'}) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
@@ -640,7 +630,6 @@ class _MainHomePageState extends State<MainHomePage> {
                                 ),
                               ),
                               errorWidget: (context, url, error) {
-                                print('Home product image error: $error');
                                 return Center(
                                   child: Icon(
                                     Icons.broken_image,
@@ -745,7 +734,7 @@ class _MainHomePageState extends State<MainHomePage> {
                   if (category == 'Discount' &&
                       product.discountPercentage != null) ...[
                     Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+                      CurrencyService.formatPrice(context, product.price),
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -753,7 +742,7 @@ class _MainHomePageState extends State<MainHomePage> {
                       ),
                     ),
                     Text(
-                      '\$${(product.price * (1 - product.discountPercentage! / 100)).toStringAsFixed(2)}',
+                      CurrencyService.formatPrice(context, product.price * (1 - product.discountPercentage! / 100)),
                       style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -761,7 +750,7 @@ class _MainHomePageState extends State<MainHomePage> {
                     ),
                   ] else
                     Text(
-                      '\$${product.price.toStringAsFixed(2)}',
+                      CurrencyService.formatPrice(context, product.price),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -774,7 +763,7 @@ class _MainHomePageState extends State<MainHomePage> {
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(delay: (index * 100).ms).slideY(begin: 0.1);
   }
 
   Widget _buildShopPage() {
